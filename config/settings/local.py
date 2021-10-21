@@ -11,7 +11,7 @@ SECRET_KEY = 'django-insecure-#*n4l14-4397kxi)(wy7+f1h196$+h_ue1ts&4ui9i$pqn&$fm
 # django-extensions
 INSTALLED_APPS += ["django_extensions"]  # noqa F405
 
-ALLOWED_HOSTS = ["localhost", "0.0.0.0", "127.0.0.1"]
+ALLOWED_HOSTS = ["*"]
 DEBUG = True
 
 # Database
