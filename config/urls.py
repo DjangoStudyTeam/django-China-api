@@ -13,9 +13,40 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+from django.conf import settings
 from django.contrib import admin
-from django.urls import path
+from django.urls import include, path
+from drf_spectacular.views import (
+    SpectacularAPIView,
+    SpectacularRedocView,
+    SpectacularSwaggerView,
+)
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
+    path("admin/", admin.site.urls),
+    path("api/v1/", include("config.api_router")),
 ]
+
+if settings.DEBUG:
+    # https://www.django-rest-framework.org/#installation
+    urlpatterns += [
+        path("api-auth/", include("rest_framework.urls", namespace="rest_framework"))
+    ]
+
+    if "debug_toolbar" in settings.INSTALLED_APPS:
+        import debug_toolbar
+
+        urlpatterns = [
+            path("__debug__/", include(debug_toolbar.urls)),
+            path("schema/", SpectacularAPIView.as_view(), name="schema"),
+            path(
+                "swagger/",
+                SpectacularSwaggerView.as_view(url_name="schema"),
+                name="swagger",
+            ),
+            path(
+                "redoc/",
+                SpectacularRedocView.as_view(url_name="schema"),
+                name="redoc",
+            ),
+        ] + urlpatterns
