@@ -1,17 +1,14 @@
 from django.contrib.auth import get_user_model
 from django.contrib.auth.signals import user_logged_in
-from django.contrib.auth.hashers import check_password
-from django.utils.timezone import now
 from djoser.email import ActivationEmail
+from djoser.serializers import TokenSerializer
 from drf_spectacular.utils import extend_schema
 from rest_framework import status, viewsets
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.authtoken.models import Token
-from rest_framework.authtoken.serializers import AuthTokenSerializer
 from rest_framework.decorators import action
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
-from users.common import response
 from . import signals
 from .serializers import RegisterSerializer, UserSerializer, LoginSerializer
 
@@ -68,32 +65,19 @@ class AuthViewSet(viewsets.GenericViewSet):
         detail=False,
         url_name="login",
         url_path="login",
-        serializer_class=LoginSerializer,
+        serializer_class=TokenSerializer,
     )
     def login(self, request):
-        try:
-            username = request.data.get("username")
-            password = request.data.get("password")
-        except KeyError:
-            return Response(response.KEY_MISS)
-
-        user = User.objects.filter(username=username).first()
-
-        if not user:
-            return Response(response.USER_NOT_EXISTS)
-
-        if user.is_active == 0:
-            return Response(response.USER_NOT_ACTIVE)
-
-        if not check_password(password, user.password):
-            return Response(response.LOGIN_FAILED)
-        user.last_login = now()
-        user.save()
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        user = serializer.validated_data["user"]
+        Token.objects.filter(user=user).delete()
+        token, _ = Token.objects.get_or_create(user=user)
         user_logged_in.send(
             sender=self.__class__, user=user, request=self.request
         )
-
-        Token.objects.filter(user=user).delete()
-        token, created = Token.objects.get_or_create(user=user)
-        response.LOGIN_SUCCESS["token"] = token.key
-        return Response(response.LOGIN_SUCCESS)
+        output_serializer = TokenSerializer(token, context={"request": request})
+        return Response(
+            data=output_serializer.data,
+            status=status.HTTP_200_OK
+        )
