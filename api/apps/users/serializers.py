@@ -1,7 +1,8 @@
-from django.contrib.auth import authenticate
 from django.utils.translation import gettext_lazy as _
 from djoser.serializers import UserCreatePasswordRetypeSerializer
 from rest_framework import serializers
+from rest_framework.authtoken.models import Token
+
 from .models import User
 
 
@@ -29,25 +30,24 @@ class LoginSerializer(serializers.Serializer):
     )
 
     def validate(self, attrs):
-        username = attrs.get("username")
-        password = attrs.get("password")
+        username = attrs["username"]
+        password = attrs["password"]
 
-        if username and password:
-            user = authenticate(
-                request=self.context.get("request"),
-                username=username, password=password
-            )
-            if not user:
-                user = User.objects.filter(username=username).first()
-                if user and not user.check_password(password):
-                    msg = _("用户名或密码错误")
-                    raise serializers.ValidationError(msg)
-            if user and not user.is_active:
-                msg = _("用户未激活")
-                raise serializers.ValidationError(msg)
-            if user and user.is_active:
-                attrs['user'] = user
-                return attrs
-        else:
-            msg = _("必须包含 username 和 password 字段")
+        user = User.objects.filter(username=username).first()
+
+        if not user or not user.check_password(password):
+            msg = _("Unable to login with provided credentials.")
             raise serializers.ValidationError(msg)
+        if user.is_active == 0:
+            msg = _("User account is disabled")
+            raise serializers.ValidationError(msg)
+        attrs['user'] = user
+        return attrs
+
+
+class TokenSerializer(serializers.ModelSerializer):
+    user = UserSerializer()
+
+    class Meta:
+        model = Token
+        fields = ["key", "user"]

@@ -1,7 +1,6 @@
 from django.contrib.auth import get_user_model
 from django.contrib.auth.signals import user_logged_in
 from djoser.email import ActivationEmail
-from djoser.serializers import TokenSerializer
 from drf_spectacular.utils import extend_schema
 from rest_framework import status, viewsets
 from rest_framework.authentication import TokenAuthentication
@@ -10,7 +9,7 @@ from rest_framework.decorators import action
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from . import signals
-from .serializers import RegisterSerializer, UserSerializer, LoginSerializer
+from .serializers import RegisterSerializer, UserSerializer, LoginSerializer, TokenSerializer
 
 
 User = get_user_model()
@@ -58,7 +57,8 @@ class AuthViewSet(viewsets.GenericViewSet):
 
     @extend_schema(
         summary="Login",
-        responses={200: LoginSerializer},
+        request=LoginSerializer,
+        responses={200: TokenSerializer},
     )
     @action(
         ["POST"],
