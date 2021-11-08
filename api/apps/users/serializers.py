@@ -1,3 +1,4 @@
+from django.contrib.auth import authenticate
 from django.utils.translation import gettext_lazy as _
 from djoser.serializers import UserCreatePasswordRetypeSerializer
 from rest_framework import serializers
@@ -33,13 +34,12 @@ class LoginSerializer(serializers.Serializer):
         username = attrs["username"]
         password = attrs["password"]
 
-        user = User.objects.filter(username=username).first()
-
-        if not user or not user.check_password(password):
+        user = authenticate(
+            request=self.context.get("request"),
+            username=username, password=password
+        )
+        if not user:
             msg = _("Unable to login with provided credentials.")
-            raise serializers.ValidationError(msg)
-        if user.is_active == 0:
-            msg = _("User account is disabled")
             raise serializers.ValidationError(msg)
         attrs['user'] = user
         return attrs
