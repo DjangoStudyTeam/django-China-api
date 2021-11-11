@@ -1,6 +1,6 @@
 from django.contrib.auth import authenticate
 from django.utils.translation import gettext_lazy as _
-from djoser.serializers import UserCreatePasswordRetypeSerializer
+from djoser.serializers import UserCreatePasswordRetypeSerializer, SetPasswordRetypeSerializer
 from rest_framework import serializers
 from rest_framework.authtoken.models import Token
 
@@ -51,3 +51,19 @@ class TokenSerializer(serializers.ModelSerializer):
     class Meta:
         model = Token
         fields = ["key", "user"]
+
+
+class PasswordSerializer(SetPasswordRetypeSerializer):
+    def validate_current_password(self, value):
+        is_password_valid = self.context["request"].user.check_password(value)
+        if is_password_valid:
+            return value
+        else:
+            raise serializers.ValidationError("Invalid password.")
+
+    def validate(self, attrs):
+        attrs = super().validate(attrs)
+        if attrs["new_password"] == attrs["re_new_password"]:
+            return attrs
+        else:
+            raise serializers.ValidationError("The two password fields didn't match.")

@@ -9,8 +9,7 @@ from rest_framework.decorators import action
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from . import signals
-from .serializers import RegisterSerializer, UserSerializer, LoginSerializer, TokenSerializer
-
+from .serializers import RegisterSerializer, UserSerializer, LoginSerializer, TokenSerializer, PasswordSerializer
 
 User = get_user_model()
 
@@ -26,6 +25,8 @@ class AuthViewSet(viewsets.GenericViewSet):
             return RegisterSerializer
         elif self.action == "login":
             return LoginSerializer
+        elif self.action == "change_password":
+            return PasswordSerializer
         return super().get_serializer_class()
 
     @extend_schema(
@@ -97,6 +98,29 @@ class AuthViewSet(viewsets.GenericViewSet):
     def logout(self, request):
         Token.objects.filter(user=request.user).delete()
         user_logged_out.send(
+            sender=request.user.__class__, request=request, user=request.user
+        )
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+    @extend_schema(
+        summary="change_password",
+        request=PasswordSerializer,
+    )
+    @action(
+        ["POST"],
+        detail=False,
+        url_name="change_password",
+        url_path="change_password",
+        permission_classes=[IsAuthenticated]
+    )
+    def change_password(self, request):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        new_password = serializer.validated_data["new_password"]
+        user = request.user
+        user.set_password(new_password)
+        user.save()
+        signals.user_password_changed.send(
             sender=request.user.__class__, request=request, user=request.user
         )
         return Response(status=status.HTTP_204_NO_CONTENT)
