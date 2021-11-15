@@ -54,16 +54,9 @@ class TokenSerializer(serializers.ModelSerializer):
 
 
 class PasswordSerializer(SetPasswordRetypeSerializer):
-    def validate_current_password(self, value):
-        is_password_valid = self.context["request"].user.check_password(value)
-        if is_password_valid:
-            return value
-        else:
-            raise serializers.ValidationError("Invalid password.")
 
-    def validate(self, attrs):
-        attrs = super().validate(attrs)
-        if attrs["new_password"] == attrs["re_new_password"]:
-            return attrs
-        else:
-            raise serializers.ValidationError("The two password fields didn't match.")
+    def set_password(self, request, validated_data):
+        new_password = validated_data["new_password"]
+        user = request.user
+        user.set_password(new_password)
+        user.save()
