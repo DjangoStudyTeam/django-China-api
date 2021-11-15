@@ -116,7 +116,7 @@ class AuthViewSet(viewsets.GenericViewSet):
     def change_password(self, request):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        PasswordSerializer.set_password(self, request, serializer.validated_data)
+        PasswordSerializer().set_password(request, serializer.validated_data)
         signals.user_password_changed.send(
             sender=request.user.__class__, request=request, user=request.user
         )
