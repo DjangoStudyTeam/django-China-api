@@ -55,8 +55,8 @@ class TokenSerializer(serializers.ModelSerializer):
 
 class PasswordSerializer(SetPasswordRetypeSerializer):
 
-    def set_password(self, request, validated_data):
-        new_password = validated_data["new_password"]
-        user = request.user
+    def set_password(self):
+        new_password = self.validated_data["new_password"]
+        user = self.context['request'].user
         user.set_password(new_password)
         user.save()
