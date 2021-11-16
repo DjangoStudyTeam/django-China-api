@@ -70,7 +70,22 @@ class AuthViewSetTestCase(APITestCase):
         assert "Unauthorized" in response.status_text
 
     def test_logout_with_authentication_invalid_data(self):
-        data = {"username": "user", "password": "password"}
         response = self.post("api:auth-logout", extra={"HTTP_AUTHORIZATION": "token abc123"})
         self.response_401(response)
         assert "Unauthorized" in response.status_text
+
+    def test_change_password(self):
+        data = {"username": "user", "password": "password"}
+        authorization = "token " + self.post("api:auth-login", data=data).data["key"]
+        data = {"current_password": "password", "new_password": "admin777", "re_new_password": "admin777"}
+        response = self.post("api:auth-change_password", data=data, extra={"HTTP_AUTHORIZATION": authorization})
+        self.response_204(response)
+        assert 204 == response.status_code
+
+    def test_change_password_with_invalid_data(self):
+        data = {"username": "user", "password": "password"}
+        authorization = "token " + self.post("api:auth-login", data=data).data["key"]
+        data = {"current_password": "password", "new_password": "admin777", "re_new_password": "admin776"}
+        response = self.post("api:auth-change_password", data=data, extra={"HTTP_AUTHORIZATION": authorization})
+        self.response_400(response)
+        assert "non_field_errors" in response.data
