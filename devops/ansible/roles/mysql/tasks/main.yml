@@ -1,0 +1,29 @@
+---
+- name: Ensure MySQL is installed
+  ansible.builtin.package:
+    name:
+      - default-mysql-server
+      - python3-pymysql
+      - default-libmysqlclient-dev
+      - build-essential
+    update_cache: yes
+    state: present
+
+- name: Ensure MySQL is started
+  ansible.builtin.service:
+    name: mysql
+    state: started
+
+- name: Create database
+  community.mysql.mysql_db:
+    name: "{{ db_name }}"
+    state: present
+    config_file: /etc/mysql/debian.cnf
+
+- name: Create user
+  community.mysql.mysql_user:
+    name: "{{ db_user }}"
+    password: "{{ db_pwd }}"
+    priv: '{{ db_name }}.*:ALL,GRANT'
+    state: present
+    config_file: /etc/mysql/debian.cnf

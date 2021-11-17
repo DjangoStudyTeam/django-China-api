@@ -1,0 +1,27 @@
+---
+- name: Ensure Supervisor is installed
+  ansible.builtin.package:
+    name: supervisor
+    state: present
+
+- name: Ensure Supervisor is started
+  ansible.builtin.service:
+    name: supervisor
+    state: started
+
+- name: Copy conf
+  template:
+    src: "{{ item }}.j2"
+    dest: "/etc/supervisor/conf.d/{{ item }}"
+  loop:
+    - django-China-api.conf
+  notify: Restart program
+
+- name: Add programs
+  community.general.supervisorctl:
+    config: /etc/supervisor/supervisord.conf
+    name: "{{ item }}"
+    state: present
+  loop:
+    - django-China-api
+

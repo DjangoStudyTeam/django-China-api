@@ -1,0 +1,40 @@
+---
+- name: Ensure Nginx is installed
+  ansible.builtin.package:
+    name: nginx
+    state: present
+
+- name: Remove default
+  file:
+    path: /etc/nginx/sites-enabled/default.conf
+    state: absent
+  notify: Restart Nginx
+
+- name: Ensure includes directory
+  ansible.builtin.file:
+    path: /etc/nginx/includes
+    state: directory
+
+- name: Copy proxy conf
+  ansible.builtin.template:
+    src: proxy.conf.j2
+    dest: /etc/nginx/includes/proxy.conf
+  notify: Restart Nginx
+
+- name: Copy site conf
+  template:
+    src: django-China-api.conf.j2
+    dest: /etc/nginx/sites-available/django-China-api.conf
+  notify: Restart Nginx
+
+- name: Enable site
+  file:
+    src: /etc/nginx/sites-available/django-China-api.conf
+    dest: /etc/nginx/sites-enabled/django-China-api.conf
+    state: link
+  notify: Restart Nginx
+
+#- name: Ensure Nginx is started
+#  ansible.builtin.service:
+#    name: nginx
+#    state: started

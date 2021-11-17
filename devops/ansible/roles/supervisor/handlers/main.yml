@@ -1,0 +1,9 @@
+- name: Restart program
+  community.general.supervisorctl:
+    config: /etc/supervisor/supervisord.conf
+    name: "{{ item }}"
+    state: restarted
+  loop:
+    - django-China-api
+  become: yes
+  become_method: sudo
