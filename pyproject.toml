@@ -17,6 +17,7 @@ drf-spectacular = "^0.20.2"
 djoser = "^2.1.0"
 factory-boy = "^3.2.0"
 django-environ = "^0.8.1"
+mysqlclient = "^2.0.3"
 
 [tool.poetry.dev-dependencies]
 django-debug-toolbar = "^3.2.2"
