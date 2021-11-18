@@ -1,0 +1,11 @@
+[program:django-China-api]
+directory=/home/alice/apps/django-China-api
+command=/home/alice/.local/bin/poetry run uvicorn config.asgi:application --host 127.0.0.1 --port 8000
+startsecs=1
+startretries=3
+autostart=true
+autorestart=unexpected
+stopasgroup=true
+killasgroup=true
+user=alice
+environment=DJANGO_SETTINGS_MODULE="{{ django_settings_module }}"

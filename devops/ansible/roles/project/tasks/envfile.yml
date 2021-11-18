@@ -1,0 +1,7 @@
+---
+- name: Copy envfile
+  ansible.builtin.template:
+    src: django-China-api.env.j2
+    dest: "{{ project_path }}/django-China-api.env"
+  notify:
+    Restart program

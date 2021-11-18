@@ -1,0 +1,27 @@
+---
+- name: Deploy staging site
+  hosts: staging
+  remote_user: alice
+  roles:
+    - role: redis
+      become: yes
+      become_method: sudo
+      tags: "redis"
+
+    - role: mysql
+      become: yes
+      become_method: sudo
+      tags: "mysql"
+
+    - role: nginx
+      become: yes
+      become_method: sudo
+      tags: "nginx"
+
+    - role: supervisor
+      become: yes
+      become_method: sudo
+      tags: "supervisor"
+
+    - role: project
+      tags: "project"

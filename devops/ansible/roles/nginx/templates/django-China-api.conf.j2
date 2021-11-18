@@ -1,0 +1,28 @@
+upstream django-China-api {
+    server 127.0.0.1:8000;
+}
+
+server {
+    listen 80;
+    server_name {{ domain }};
+    charset utf-8;
+    client_max_body_size 10M;
+    location /static/assets {
+        alias /var/www/django-China/web/dist/assets/;
+    }
+    location /media {
+        alias /var/www/django-China/api/media/;
+    }
+    location /static {
+        alias /var/www/django-China/api/static/;
+    }
+    location ~ ^/(api|{{ django_admin_url | replace('/', '') }})/ {
+        include /etc/nginx/includes/proxy.conf;
+        proxy_pass http://django-China-api;
+    }
+    location / {
+        root /var/www/django-China/web/dist/;
+        index index.html;
+        try_files $uri /index.html;
+    }
+}

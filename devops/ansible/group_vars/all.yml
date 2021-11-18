@@ -1,0 +1,4 @@
+project_path: "~/apps/django-China-api"
+django_static_root: /var/www/django-China/api/static/
+django_media_root: /var/www/django-China/api/media/
+django_database_default_url: mysql://{{ db_user }}:{{ db_pwd }}@localhost:3306/{{ db_name }}

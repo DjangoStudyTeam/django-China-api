@@ -1,0 +1,26 @@
+---
+- name: Ensure www directory
+  ansible.builtin.file:
+    path: "/var/www/django-China/api/"
+    state: directory
+  become: yes
+  become_method: sudo
+
+- name: Ensure www directory permission
+  ansible.builtin.file:
+    path: "/var/www/django-China/"
+    state: directory
+    recurse: yes
+    owner: alice
+    group: alice
+  become: yes
+  become_method: sudo
+
+- name: Run django management commands
+  ansible.builtin.shell:
+    cmd: "~/.local/bin/poetry run python manage.py {{ item }} --settings={{ django_settings_module }}"
+    chdir: "{{ project_path }}"
+  loop:
+    - collectstatic --noinput
+#    - compilemessages
+    - migrate

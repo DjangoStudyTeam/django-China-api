@@ -1,0 +1,15 @@
+---
+- name: Ensupre project directory
+  ansible.builtin.file:
+    path: "{{ project_path }}"
+    state: directory
+
+- name: Checkout repository
+  ansible.builtin.git:
+#    repo: https://github.com/DjangoStudyTeam/django-China-api.git
+    repo: https://hub.fastgit.org/DjangoStudyTeam/django-China-api.git
+    dest: "{{ project_path }}"
+    version: "{{ version }}"
+    accept_hostkey: yes
+  notify:
+    Restart program

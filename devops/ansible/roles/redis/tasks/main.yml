@@ -1,0 +1,10 @@
+---
+- name: Ensure Redis is installed
+  ansible.builtin.package:
+    name: redis
+    state: present
+
+- name: Ensure Redis is started
+  ansible.builtin.service:
+    name: redis
+    state: started
