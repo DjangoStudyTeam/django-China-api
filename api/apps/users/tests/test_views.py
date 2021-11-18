@@ -1,5 +1,10 @@
+import time
+
+from django.contrib.auth.tokens import PasswordResetTokenGenerator
 from django.test.utils import mail
+from djoser import utils
 from test_plus.test import APITestCase
+from .factories import UserFactory
 
 
 class AuthViewSetTestCase(APITestCase):
@@ -89,3 +94,32 @@ class AuthViewSetTestCase(APITestCase):
         response = self.post("api:auth-change_password", data=data, extra={"HTTP_AUTHORIZATION": authorization})
         self.response_400(response)
         assert "non_field_errors" in response.data
+
+    def test_forgot_password(self):
+        data = {"email": "user@example.com"}
+        response = self.post("api:auth-forgot_password", data=data)
+        self.response_204(response)
+        assert 204 == response.status_code
+
+    def test_forgot_password_with_invalid_data(self):
+        data = {"email": "test@example.com"}
+        response = self.post("api:auth-forgot_password", data=data)
+        self.response_400(response)
+        assert "email_not_found" in response.data
+
+    def test_reset_password(self):
+        data = {"username": "user", "password": "password"}
+        key = self.post("api:auth-login", data=data).data["key"]
+        uid = utils.encode_uid(self.user.id)
+        token = PasswordResetTokenGenerator().make_token(self.user.username)
+        authorization = "token " + key
+        data = {
+            "uid": uid,
+            "token": token,
+            "new_password": "password1",
+            "re_new_password": "password1",
+            "current_password": "password"
+        }
+        response = self.post("api:auth-reset_password", data=data, extra={"HTTP_AUTHORIZATION": authorization})
+        self.response_204(response)
+        assert 204 == response.status_code

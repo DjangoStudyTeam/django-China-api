@@ -1,6 +1,9 @@
 from django.contrib.auth import get_user_model
 from django.contrib.auth.signals import user_logged_in, user_logged_out
-from djoser.email import ActivationEmail
+from django.contrib.auth.tokens import default_token_generator
+from djoser.conf import settings
+from djoser.email import ActivationEmail, PasswordResetEmail, PasswordChangedConfirmationEmail
+from djoser.serializers import SendEmailResetSerializer
 from drf_spectacular.utils import extend_schema
 from rest_framework import status, viewsets
 from rest_framework.authentication import TokenAuthentication
@@ -9,7 +12,8 @@ from rest_framework.decorators import action
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from . import signals
-from .serializers import RegisterSerializer, UserSerializer, LoginSerializer, TokenSerializer, PasswordSerializer
+from .serializers import RegisterSerializer, UserSerializer, LoginSerializer, TokenSerializer, PasswordSerializer, \
+    PasswordResetConfirmSerializer
 
 User = get_user_model()
 
@@ -19,6 +23,7 @@ class AuthViewSet(viewsets.GenericViewSet):
     serializer_class = None
     # disable csrf check in SessionAuthentication
     authentication_classes = [TokenAuthentication]
+    token_generator = default_token_generator
 
     def get_serializer_class(self):
         if self.action == "register":
@@ -27,6 +32,10 @@ class AuthViewSet(viewsets.GenericViewSet):
             return LoginSerializer
         elif self.action == "change_password":
             return PasswordSerializer
+        elif self.action == "forgot_password":
+            return SendEmailResetSerializer
+        elif self.action == "reset_password":
+            return PasswordResetConfirmSerializer
         return super().get_serializer_class()
 
     @extend_schema(
@@ -121,3 +130,51 @@ class AuthViewSet(viewsets.GenericViewSet):
             sender=request.user.__class__, request=request, user=request.user
         )
         return Response(status=status.HTTP_200_OK)
+
+    @extend_schema(
+        summary="forgot_password",
+        request=SendEmailResetSerializer,
+        responses=None
+    )
+    @action(
+        ["POST"],
+        detail=False,
+        url_name="forgot_password",
+        url_path="forgot_password",
+    )
+    def forgot_password(self, request):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        user = serializer.get_user()
+        if user:
+            context = {"user": user}
+            to = [user.email]
+            PasswordResetEmail(self.request, context).send(to)
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        else:
+            return Response(
+                status=status.HTTP_400_BAD_REQUEST,
+                data={"email_not_found": "User with given email does not exist."}
+            )
+
+    @extend_schema(
+        summary="reset_password",
+        responses=None
+    )
+    @action(
+        ["POST"],
+        detail=False,
+        url_path="reset_password",
+        url_name="reset_password",
+    )
+    def reset_password(self, request):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        user = serializer.user
+        user.set_password(serializer.data["new_password"])
+
+        if settings.PASSWORD_CHANGED_EMAIL_CONFIRMATION:
+            context = {"user": user}
+            to = [user.email]
+            PasswordChangedConfirmationEmail(self.request, context).send(to)
+        return Response(status=status.HTTP_204_NO_CONTENT)

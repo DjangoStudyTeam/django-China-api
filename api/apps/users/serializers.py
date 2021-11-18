@@ -1,6 +1,6 @@
 from django.contrib.auth import authenticate
 from django.utils.translation import gettext_lazy as _
-from djoser.serializers import UserCreatePasswordRetypeSerializer, SetPasswordRetypeSerializer
+from djoser.serializers import UserCreatePasswordRetypeSerializer, SetPasswordRetypeSerializer, UidAndTokenSerializer
 from rest_framework import serializers
 from rest_framework.authtoken.models import Token
 
@@ -60,3 +60,7 @@ class PasswordSerializer(SetPasswordRetypeSerializer):
         user = self.context['request'].user
         user.set_password(new_password)
         user.save()
+
+
+class PasswordResetConfirmSerializer(UidAndTokenSerializer, PasswordSerializer):
+    pass
