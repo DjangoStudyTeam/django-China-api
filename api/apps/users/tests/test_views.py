@@ -1,4 +1,6 @@
+from django.contrib.auth.tokens import PasswordResetTokenGenerator
 from django.test.utils import mail
+from djoser import utils
 from test_plus.test import APITestCase
 
 
@@ -61,8 +63,8 @@ class AuthViewSetTestCase(APITestCase):
         data = {"username": "user", "password": "password"}
         authorization = "token " + self.post("api:auth-login", data=data).data["key"]
         response = self.post("api:auth-logout", extra={"HTTP_AUTHORIZATION": authorization})
-        self.response_204(response)
-        assert 204 == response.status_code
+        self.response_200(response)
+        assert 200 == response.status_code
 
     def test_logout_with_no_authentication(self):
         response = self.post("api:auth-logout")
@@ -79,8 +81,8 @@ class AuthViewSetTestCase(APITestCase):
         authorization = "token " + self.post("api:auth-login", data=data).data["key"]
         data = {"current_password": "password", "new_password": "admin777", "re_new_password": "admin777"}
         response = self.post("api:auth-change_password", data=data, extra={"HTTP_AUTHORIZATION": authorization})
-        self.response_204(response)
-        assert 204 == response.status_code
+        self.response_200(response)
+        assert 200 == response.status_code
 
     def test_change_password_with_invalid_data(self):
         data = {"username": "user", "password": "password"}
@@ -89,3 +91,44 @@ class AuthViewSetTestCase(APITestCase):
         response = self.post("api:auth-change_password", data=data, extra={"HTTP_AUTHORIZATION": authorization})
         self.response_400(response)
         assert "non_field_errors" in response.data
+
+    def test_forgot_password(self):
+        data = {"email": "user@example.com"}
+        response = self.post("api:auth-forgot_password", data=data)
+        self.response_200(response)
+        assert 200 == response.status_code
+
+    def test_forgot_password_with_invalid_data(self):
+        data = {"email": "test@example.com"}
+        response = self.post("api:auth-forgot_password", data=data)
+        self.response_400(response)
+        assert "email_not_found" in response.data
+
+    def test_reset_password(self):
+        uid = utils.encode_uid(self.user.id)
+        token = PasswordResetTokenGenerator().make_token(self.user)
+        data = {"uid": uid, "token": token, "new_password": "uncommon*pwd"}
+        response = self.post("api:auth-reset_password", data=data)
+        self.response_200(response)
+        assert 200 == response.status_code
+
+    def test_reset_password_with_invalid_uid(self):
+        data = {"uid": "1", "token": "abc123", "new_password": "uncommon*pwd"}
+        response = self.post("api:auth-reset_password", data=data)
+        self.response_400(response)
+        assert "uid" in response.data
+
+    def test_reset_password_with_invalid_token(self):
+        uid = utils.encode_uid(self.user.id)
+        data = {"uid": uid, "token": "abc123", "new_password": "uncommon*pwd"}
+        response = self.post("api:auth-reset_password", data=data)
+        self.response_400(response)
+        assert "token" in response.data
+
+    def test_reset_password_with_common_password(self):
+        uid = utils.encode_uid(self.user.id)
+        token = PasswordResetTokenGenerator().make_token(self.user)
+        data = {"uid": uid, "token": token, "new_password": "admin123"}
+        response = self.post("api:auth-reset_password", data=data)
+        self.response_400(response)
+        assert "new_password" in response.data
