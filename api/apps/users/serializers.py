@@ -61,6 +61,3 @@ class PasswordSerializer(SetPasswordRetypeSerializer):
         user.set_password(new_password)
         user.save()
 
-
-class PasswordResetConfirmSerializer(UidAndTokenSerializer, PasswordSerializer):
-    pass

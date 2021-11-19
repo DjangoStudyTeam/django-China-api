@@ -1,9 +1,8 @@
 from django.contrib.auth import get_user_model
 from django.contrib.auth.signals import user_logged_in, user_logged_out
 from django.contrib.auth.tokens import default_token_generator
-from djoser.conf import settings
-from djoser.email import ActivationEmail, PasswordResetEmail, PasswordChangedConfirmationEmail
-from djoser.serializers import SendEmailResetSerializer
+from djoser.email import ActivationEmail, PasswordResetEmail
+from djoser.serializers import SendEmailResetSerializer, PasswordResetConfirmSerializer
 from drf_spectacular.utils import extend_schema
 from rest_framework import status, viewsets
 from rest_framework.authentication import TokenAuthentication
@@ -12,8 +11,7 @@ from rest_framework.decorators import action
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from . import signals
-from .serializers import RegisterSerializer, UserSerializer, LoginSerializer, TokenSerializer, PasswordSerializer, \
-    PasswordResetConfirmSerializer
+from .serializers import RegisterSerializer, UserSerializer, LoginSerializer, TokenSerializer, PasswordSerializer
 
 User = get_user_model()
 
@@ -109,7 +107,7 @@ class AuthViewSet(viewsets.GenericViewSet):
         user_logged_out.send(
             sender=request.user.__class__, request=request, user=request.user
         )
-        return Response(status=status.HTTP_204_NO_CONTENT)
+        return Response(status=status.HTTP_200_OK)
 
     @extend_schema(
         summary="change_password",
@@ -150,7 +148,7 @@ class AuthViewSet(viewsets.GenericViewSet):
             context = {"user": user}
             to = [user.email]
             PasswordResetEmail(self.request, context).send(to)
-            return Response(status=status.HTTP_204_NO_CONTENT)
+            return Response(status=status.HTTP_200_OK)
         else:
             return Response(
                 status=status.HTTP_400_BAD_REQUEST,
@@ -172,9 +170,4 @@ class AuthViewSet(viewsets.GenericViewSet):
         serializer.is_valid(raise_exception=True)
         user = serializer.user
         user.set_password(serializer.data["new_password"])
-
-        if settings.PASSWORD_CHANGED_EMAIL_CONFIRMATION:
-            context = {"user": user}
-            to = [user.email]
-            PasswordChangedConfirmationEmail(self.request, context).send(to)
-        return Response(status=status.HTTP_204_NO_CONTENT)
+        return Response(status=status.HTTP_200_OK)
