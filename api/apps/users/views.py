@@ -196,9 +196,7 @@ class AuthViewSet(viewsets.GenericViewSet):
             sender=self.__class__, user=user, request=self.request
         )
 
-        if settings.SEND_CONFIRMATION_EMAIL:
-            context = {"user": user}
-            to = [user.email]
-            ConfirmationEmail(self.request, context).send(to)
-
+        context = {"user": user}
+        to = [user.email]
+        ConfirmationEmail(self.request, context).send(to)
         return Response(status=status.HTTP_200_OK)
