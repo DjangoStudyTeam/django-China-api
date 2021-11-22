@@ -1,8 +1,9 @@
 from django.contrib.auth import get_user_model
 from django.contrib.auth.signals import user_logged_in, user_logged_out
 from django.contrib.auth.tokens import default_token_generator
-from djoser.email import ActivationEmail, PasswordResetEmail
-from djoser.serializers import SendEmailResetSerializer, PasswordResetConfirmSerializer
+from djoser.conf import settings
+from djoser.email import ActivationEmail, PasswordResetEmail, ConfirmationEmail
+from djoser.serializers import SendEmailResetSerializer, PasswordResetConfirmSerializer, ActivationSerializer
 from drf_spectacular.utils import extend_schema
 from rest_framework import status, viewsets
 from rest_framework.authentication import TokenAuthentication
@@ -34,6 +35,8 @@ class AuthViewSet(viewsets.GenericViewSet):
             return SendEmailResetSerializer
         elif self.action == "reset_password":
             return PasswordResetConfirmSerializer
+        elif self.action == "activate":
+            return ActivationSerializer
         return super().get_serializer_class()
 
     @extend_schema(
@@ -170,4 +173,32 @@ class AuthViewSet(viewsets.GenericViewSet):
         serializer.is_valid(raise_exception=True)
         user = serializer.user
         user.set_password(serializer.data["new_password"])
+        return Response(status=status.HTTP_200_OK)
+
+    @extend_schema(
+        summary="Activate",
+        responses=None
+    )
+    @action(
+        ["POST"],
+        detail=False,
+        url_name="activate",
+        url_path="activate"
+    )
+    def activate(self, request):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        user = serializer.user
+        user.is_active = True
+        user.save()
+
+        signals.user_activated.send(
+            sender=self.__class__, user=user, request=self.request
+        )
+
+        if settings.SEND_CONFIRMATION_EMAIL:
+            context = {"user": user}
+            to = [user.email]
+            ConfirmationEmail(self.request, context).send(to)
+
         return Response(status=status.HTTP_200_OK)
