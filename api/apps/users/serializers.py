@@ -1,6 +1,6 @@
 from django.contrib.auth import authenticate
 from django.utils.translation import gettext_lazy as _
-from djoser.serializers import UserCreatePasswordRetypeSerializer, SetPasswordRetypeSerializer, UidAndTokenSerializer
+from djoser.serializers import UserCreatePasswordRetypeSerializer, SetPasswordRetypeSerializer
 from rest_framework import serializers
 from rest_framework.authtoken.models import Token
 

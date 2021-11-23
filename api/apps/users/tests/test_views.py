@@ -132,3 +132,31 @@ class AuthViewSetTestCase(APITestCase):
         response = self.post("api:auth-reset_password", data=data)
         self.response_400(response)
         assert "new_password" in response.data
+
+    def test_activate(self):
+        self.user.is_active = False
+        self.user.save()
+        uid = utils.encode_uid(self.user.id)
+        token = PasswordResetTokenGenerator().make_token(self.user)
+        data = {"uid": uid, "token": token}
+        response = self.post("api:auth-activate", data=data)
+        self.response_200(response)
+        assert 200 == response.status_code
+
+    def test_activate_with_invalid_data(self):
+        self.user.is_active = False
+        self.user.save()
+        uid = utils.encode_uid(self.user.id)
+        token = PasswordResetTokenGenerator().make_token(self.user)
+        data = {"uid": uid, "token": token}
+        response = self.post("api:auth-activate", data=data)
+        self.response_200(response)
+        assert 200 == response.status_code
+
+    def test_activate_with_is_active(self):
+        uid = utils.encode_uid(self.user.id)
+        token = PasswordResetTokenGenerator().make_token(self.user)
+        data = {"uid": uid, "token": token}
+        response = self.post("api:auth-activate", data=data)
+        self.response_403(response)
+        assert 403 == response.status_code
