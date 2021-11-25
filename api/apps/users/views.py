@@ -1,7 +1,6 @@
 from django.contrib.auth import get_user_model
 from django.contrib.auth.signals import user_logged_in, user_logged_out
 from django.contrib.auth.tokens import default_token_generator
-from djoser.conf import settings
 from djoser.email import ActivationEmail, PasswordResetEmail, ConfirmationEmail
 from djoser.serializers import SendEmailResetSerializer, PasswordResetConfirmSerializer, ActivationSerializer
 from drf_spectacular.utils import extend_schema
@@ -37,6 +36,8 @@ class AuthViewSet(viewsets.GenericViewSet):
             return PasswordResetConfirmSerializer
         elif self.action == "activate":
             return ActivationSerializer
+        elif self.action == "resend_activation":
+            return SendEmailResetSerializer
         return super().get_serializer_class()
 
     @extend_schema(
@@ -199,4 +200,26 @@ class AuthViewSet(viewsets.GenericViewSet):
         context = {"user": user}
         to = [user.email]
         ConfirmationEmail(self.request, context).send(to)
+        return Response(status=status.HTTP_200_OK)
+
+    @extend_schema(
+        summary="resend_activation",
+        responses=None
+    )
+    @action(
+        ["POST"],
+        detail=False,
+        url_path="resend_activation",
+        url_name="resend_activation"
+    )
+    def resend_activation(self, request):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        user = serializer.get_user(is_active=False)
+        if not user:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+        context = {"user": user}
+        to = [user.email]
+        ActivationEmail(self.request, context).send(to)
+
         return Response(status=status.HTTP_200_OK)

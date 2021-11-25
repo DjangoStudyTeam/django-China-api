@@ -160,3 +160,25 @@ class AuthViewSetTestCase(APITestCase):
         response = self.post("api:auth-activate", data=data)
         self.response_403(response)
         assert 403 == response.status_code
+
+    def test_resend_activation(self):
+        self.user.is_active = False
+        self.user.save()
+        data = {"email": "user@example.com"}
+        response = self.post("api:auth-resend_activation", data=data)
+        self.response_200(response)
+        assert 200 == response.status_code
+
+    def test_resend_activation_with_invalid_data(self):
+        self.user.is_active = False
+        self.user.save()
+        data = {"email": "test@example.com"}
+        response = self.post("api:auth-resend_activation", data=data)
+        self.response_400(response)
+        assert 400 == response.status_code
+
+    def test_resend_activation_with_not_is_active(self):
+        data = {"email": "user@example.com"}
+        response = self.post("api:auth-resend_activation", data=data)
+        self.response_400(response)
+        assert 400 == response.status_code
