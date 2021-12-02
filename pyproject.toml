@@ -19,6 +19,10 @@ factory-boy = "^3.2.0"
 django-environ = "^0.8.1"
 mysqlclient = "^2.0.3"
 uvicorn = {extras = ["standard"], version = "^0.15.0"}
+isort = "^5.10.1"
+black = "^21.11b1"
+flake8 = "^4.0.1"
+flake8-isort = "^4.1.1"
 
 [tool.poetry.dev-dependencies]
 django-debug-toolbar = "^3.2.2"
@@ -40,3 +44,29 @@ minversion = "6.0"
 DJANGO_SETTINGS_MODULE = "config.settings.test"
 python_files = "tests.py test_*.py"
 addopts = "--reuse-db"
+
+[tool.isort]
+profile = "black"
+skip = ["migrations"]
+
+[tool.black]
+line-length = 120
+target-version = ['py38']
+include = '\.pyi?$'
+exclude = '''
+(
+  /(
+      \.eggs         # exclude a few common directories in the
+    | \.git          # root of the project
+    | \.hg
+    | \.mypy_cache
+    | \.tox
+    | \.venv
+    | _build
+    | buck-out
+    | build
+    | dist
+    | migrations
+  )/
+)
+'''

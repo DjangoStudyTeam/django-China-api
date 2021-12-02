@@ -29,9 +29,7 @@ urlpatterns = [
 
 if settings.DEBUG:
     # https://www.django-rest-framework.org/#installation
-    urlpatterns += [
-        path("api-auth/", include("rest_framework.urls", namespace="rest_framework"))
-    ]
+    urlpatterns += [path("api-auth/", include("rest_framework.urls", namespace="rest_framework"))]
 
     if "debug_toolbar" in settings.INSTALLED_APPS:
         import debug_toolbar

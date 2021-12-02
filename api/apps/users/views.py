@@ -1,8 +1,12 @@
 from django.contrib.auth import get_user_model
 from django.contrib.auth.signals import user_logged_in, user_logged_out
 from django.contrib.auth.tokens import default_token_generator
-from djoser.email import ActivationEmail, PasswordResetEmail, ConfirmationEmail
-from djoser.serializers import SendEmailResetSerializer, PasswordResetConfirmSerializer, ActivationSerializer
+from djoser.email import ActivationEmail, ConfirmationEmail, PasswordResetEmail
+from djoser.serializers import (
+    ActivationSerializer,
+    PasswordResetConfirmSerializer,
+    SendEmailResetSerializer,
+)
 from drf_spectacular.utils import extend_schema
 from rest_framework import status, viewsets
 from rest_framework.authentication import TokenAuthentication
@@ -10,8 +14,15 @@ from rest_framework.authtoken.models import Token
 from rest_framework.decorators import action
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
+
 from . import signals
-from .serializers import RegisterSerializer, UserSerializer, LoginSerializer, TokenSerializer, PasswordSerializer
+from .serializers import (
+    LoginSerializer,
+    PasswordSerializer,
+    RegisterSerializer,
+    TokenSerializer,
+    UserSerializer,
+)
 
 User = get_user_model()
 
@@ -55,14 +66,11 @@ class AuthViewSet(viewsets.GenericViewSet):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         user = serializer.save()
-        signals.user_registered.send(
-            sender=self.__class__, user=user, request=self.request
-        )
+        signals.user_registered.send(sender=self.__class__, user=user, request=self.request)
         context = {"user": user}
         to = [user.email]
         ActivationEmail(self.request, context).send(to)
-        output_serializer = UserSerializer(
-            instance=user, context={"request": request})
+        output_serializer = UserSerializer(instance=user, context={"request": request})
         return Response(
             data=output_serializer.data,
             status=status.HTTP_201_CREATED,
@@ -86,31 +94,17 @@ class AuthViewSet(viewsets.GenericViewSet):
         user = serializer.validated_data["user"]
         Token.objects.filter(user=user).delete()
         token, _ = Token.objects.get_or_create(user=user)
-        user_logged_in.send(
-            sender=self.__class__, user=user, request=self.request
-        )
-        output_serializer = TokenSerializer(
-            token, context={"request": request})
-        return Response(
-            data=output_serializer.data,
-            status=status.HTTP_200_OK
-        )
+        user_logged_in.send(sender=self.__class__, user=user, request=self.request)
+        output_serializer = TokenSerializer(token, context={"request": request})
+        return Response(data=output_serializer.data, status=status.HTTP_200_OK)
 
     @extend_schema(
         summary="Logout",
     )
-    @action(
-        ["POST"],
-        detail=False,
-        url_name="logout",
-        url_path="logout",
-        permission_classes=[IsAuthenticated]
-    )
+    @action(["POST"], detail=False, url_name="logout", url_path="logout", permission_classes=[IsAuthenticated])
     def logout(self, request):
         Token.objects.filter(user=request.user).delete()
-        user_logged_out.send(
-            sender=request.user.__class__, request=request, user=request.user
-        )
+        user_logged_out.send(sender=request.user.__class__, request=request, user=request.user)
         return Response(status=status.HTTP_200_OK)
 
     @extend_schema(
@@ -122,22 +116,16 @@ class AuthViewSet(viewsets.GenericViewSet):
         detail=False,
         url_name="change_password",
         url_path="change_password",
-        permission_classes=[IsAuthenticated]
+        permission_classes=[IsAuthenticated],
     )
     def change_password(self, request):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         serializer.set_password()
-        signals.user_password_changed.send(
-            sender=request.user.__class__, request=request, user=request.user
-        )
+        signals.user_password_changed.send(sender=request.user.__class__, request=request, user=request.user)
         return Response(status=status.HTTP_200_OK)
 
-    @extend_schema(
-        summary="forgot_password",
-        request=SendEmailResetSerializer,
-        responses=None
-    )
+    @extend_schema(summary="forgot_password", request=SendEmailResetSerializer, responses=None)
     @action(
         ["POST"],
         detail=False,
@@ -155,14 +143,10 @@ class AuthViewSet(viewsets.GenericViewSet):
             return Response(status=status.HTTP_200_OK)
         else:
             return Response(
-                status=status.HTTP_400_BAD_REQUEST,
-                data={"email_not_found": "User with given email does not exist."}
+                status=status.HTTP_400_BAD_REQUEST, data={"email_not_found": "User with given email does not exist."}
             )
 
-    @extend_schema(
-        summary="reset_password",
-        responses=None
-    )
+    @extend_schema(summary="reset_password", responses=None)
     @action(
         ["POST"],
         detail=False,
@@ -176,16 +160,8 @@ class AuthViewSet(viewsets.GenericViewSet):
         user.set_password(serializer.data["new_password"])
         return Response(status=status.HTTP_200_OK)
 
-    @extend_schema(
-        summary="Activate",
-        responses=None
-    )
-    @action(
-        ["POST"],
-        detail=False,
-        url_name="activate",
-        url_path="activate"
-    )
+    @extend_schema(summary="Activate", responses=None)
+    @action(["POST"], detail=False, url_name="activate", url_path="activate")
     def activate(self, request):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -193,25 +169,15 @@ class AuthViewSet(viewsets.GenericViewSet):
         user.is_active = True
         user.save()
 
-        signals.user_activated.send(
-            sender=self.__class__, user=user, request=self.request
-        )
+        signals.user_activated.send(sender=self.__class__, user=user, request=self.request)
 
         context = {"user": user}
         to = [user.email]
         ConfirmationEmail(self.request, context).send(to)
         return Response(status=status.HTTP_200_OK)
 
-    @extend_schema(
-        summary="resend_activation",
-        responses=None
-    )
-    @action(
-        ["POST"],
-        detail=False,
-        url_path="resend_activation",
-        url_name="resend_activation"
-    )
+    @extend_schema(summary="resend_activation", responses=None)
+    @action(["POST"], detail=False, url_path="resend_activation", url_name="resend_activation")
     def resend_activation(self, request):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
