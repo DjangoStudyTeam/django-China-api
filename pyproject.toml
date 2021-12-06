@@ -16,10 +16,6 @@ pillow = "^8.4.0"
 drf-spectacular = "^0.20.2"
 djoser = "^2.1.0"
 factory-boy = "^3.2.0"
-django-environ = "^0.8.1"
-mysqlclient = "^2.0.3"
-uvicorn = {extras = ["standard"], version = "^0.15.0"}
-isort = "^5.10.1"
 black = "^21.11b1"
 flake8 = "^4.0.1"
 flake8-isort = "^4.1.1"
@@ -29,6 +25,10 @@ django-debug-toolbar = "^3.2.2"
 pytest-django = "^4.4.0"
 django-test-plus = "^2.2.0"
 pytest = "^6.2.5"
+django-environ = "^0.8.1"
+mysqlclient = "^2.0.3"
+uvicorn = {extras = ["standard"], version = "^0.15.0"}
+isort = "^5.10.1"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
