@@ -24,11 +24,7 @@ class User(AbstractUser):
     avatar = models.ImageField(
         _("avatar"),
         upload_to=user_avatar_path,
-        validators=[
-            FileValidator(
-                max_size=AVATAR_MAX_SIZE, allowed_extensions=AVATAR_ALLOWED_EXTENSIONS
-            )
-        ],
+        validators=[FileValidator(max_size=AVATAR_MAX_SIZE, allowed_extensions=AVATAR_ALLOWED_EXTENSIONS)],
         blank=True,
     )
     avatar_thumbnail = ImageSpecField(

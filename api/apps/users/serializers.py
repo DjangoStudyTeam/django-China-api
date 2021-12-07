@@ -1,6 +1,9 @@
 from django.contrib.auth import authenticate
 from django.utils.translation import gettext_lazy as _
-from djoser.serializers import UserCreatePasswordRetypeSerializer, SetPasswordRetypeSerializer
+from djoser.serializers import (
+    SetPasswordRetypeSerializer,
+    UserCreatePasswordRetypeSerializer,
+)
 from rest_framework import serializers
 from rest_framework.authtoken.models import Token
 
@@ -24,24 +27,18 @@ class LoginSerializer(serializers.Serializer):
         label=_("Username"),
     )
     password = serializers.CharField(
-        label=_("Password"),
-        style={'input_type': 'password'},
-        trim_whitespace=False,
-        write_only=True
+        label=_("Password"), style={"input_type": "password"}, trim_whitespace=False, write_only=True
     )
 
     def validate(self, attrs):
         username = attrs["username"]
         password = attrs["password"]
 
-        user = authenticate(
-            request=self.context.get("request"),
-            username=username, password=password
-        )
+        user = authenticate(request=self.context.get("request"), username=username, password=password)
         if not user:
             msg = _("Unable to login with provided credentials.")
             raise serializers.ValidationError(msg)
-        attrs['user'] = user
+        attrs["user"] = user
         return attrs
 
 
@@ -54,10 +51,8 @@ class TokenSerializer(serializers.ModelSerializer):
 
 
 class PasswordSerializer(SetPasswordRetypeSerializer):
-
     def set_password(self):
         new_password = self.validated_data["new_password"]
-        user = self.context['request'].user
+        user = self.context["request"].user
         user.set_password(new_password)
         user.save()
-
