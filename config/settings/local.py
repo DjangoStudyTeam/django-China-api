@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 
-from .common import *
+from .common import *  # noqa F405
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = "django-insecure-#*n4l14-4397kxi)(wy7+f1h196$+h_ue1ts&4ui9i$pqn&$fm"
@@ -19,7 +19,7 @@ DEBUG = True
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
+        "NAME": BASE_DIR / "db.sqlite3",  # noqa F405
     }
 }
 
