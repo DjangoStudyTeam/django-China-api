@@ -53,7 +53,7 @@ reference = "tsinghua"
 name = "black"
 version = "21.11b1"
 description = "The uncompromising code formatter."
-category = "main"
+category = "dev"
 optional = false
 python-versions = ">=3.6.2"
 
@@ -383,6 +383,22 @@ url = "https://pypi.tuna.tsinghua.edu.cn/simple"
 reference = "tsinghua"
 
 [[package]]
+name = "django-tree-queries"
+version = "0.7.0"
+description = "Tree queries with explicit opt-in, without configurability"
+category = "main"
+optional = false
+python-versions = ">=3.6"
+
+[package.extras]
+tests = ["coverage"]
+
+[package.source]
+type = "legacy"
+url = "https://pypi.tuna.tsinghua.edu.cn/simple"
+reference = "tsinghua"
+
+[[package]]
 name = "djangorestframework"
 version = "3.12.4"
 description = "Web APIs for Django, made easy."
@@ -531,7 +547,7 @@ reference = "tsinghua"
 name = "flake8"
 version = "4.0.1"
 description = "the modular source code checker: pep8 pyflakes and co"
-category = "main"
+category = "dev"
 optional = false
 python-versions = ">=3.6"
 
@@ -550,7 +566,7 @@ reference = "tsinghua"
 name = "flake8-isort"
 version = "4.1.1"
 description = "flake8 plugin that integrates isort ."
-category = "main"
+category = "dev"
 optional = false
 python-versions = "*"
 
@@ -659,7 +675,7 @@ reference = "tsinghua"
 name = "isort"
 version = "5.10.1"
 description = "A Python utility / library to sort Python imports."
-category = "main"
+category = "dev"
 optional = false
 python-versions = ">=3.6.1,<4.0"
 
@@ -745,7 +761,7 @@ reference = "tsinghua"
 name = "mccabe"
 version = "0.6.1"
 description = "McCabe checker, plugin for flake8"
-category = "main"
+category = "dev"
 optional = false
 python-versions = "*"
 
@@ -758,7 +774,7 @@ reference = "tsinghua"
 name = "mypy-extensions"
 version = "0.4.3"
 description = "Experimental type system extensions for programs checked with the mypy typechecker."
-category = "main"
+category = "dev"
 optional = false
 python-versions = "*"
 
@@ -818,7 +834,7 @@ reference = "tsinghua"
 name = "pathspec"
 version = "0.9.0"
 description = "Utility library for gitignore style pattern matching of file paths."
-category = "main"
+category = "dev"
 optional = false
 python-versions = "!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*,!=3.4.*,>=2.7"
 
@@ -857,7 +873,7 @@ reference = "tsinghua"
 name = "platformdirs"
 version = "2.4.0"
 description = "A small Python module for determining appropriate platform-specific dirs, e.g. a \"user data dir\"."
-category = "main"
+category = "dev"
 optional = false
 python-versions = ">=3.6"
 
@@ -907,7 +923,7 @@ reference = "tsinghua"
 name = "pycodestyle"
 version = "2.8.0"
 description = "Python style guide checker"
-category = "main"
+category = "dev"
 optional = false
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*"
 
@@ -933,7 +949,7 @@ reference = "tsinghua"
 name = "pyflakes"
 version = "2.4.0"
 description = "passive checker of Python programs"
-category = "main"
+category = "dev"
 optional = false
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
 
@@ -1116,7 +1132,7 @@ reference = "tsinghua"
 name = "regex"
 version = "2021.11.10"
 description = "Alternative regular expression module, to replace re."
-category = "main"
+category = "dev"
 optional = false
 python-versions = "*"
 
@@ -1244,7 +1260,7 @@ reference = "tsinghua"
 name = "testfixtures"
 version = "6.18.3"
 description = "A collection of helpers and mock objects for unit tests and doc tests."
-category = "main"
+category = "dev"
 optional = false
 python-versions = "*"
 
@@ -1288,7 +1304,7 @@ reference = "tsinghua"
 name = "tomli"
 version = "1.2.2"
 description = "A lil' TOML parser"
-category = "main"
+category = "dev"
 optional = false
 python-versions = ">=3.6"
 
@@ -1301,7 +1317,7 @@ reference = "tsinghua"
 name = "typed-ast"
 version = "1.5.0"
 description = "a fork of Python 2 and 3 ast modules with type comment support"
-category = "main"
+category = "dev"
 optional = false
 python-versions = ">=3.6"
 
@@ -1447,7 +1463,7 @@ reference = "tsinghua"
 [metadata]
 lock-version = "1.1"
 python-versions = ">=3.7, <4"
-content-hash = "146de0ad620a64c7c2b533c48e721481eefec8320fc7efb771a7ca1bfe097170"
+content-hash = "f074d44ab00ecf6ad9dde0cb6fcf3948b57bef365a3387eae17e7fa41d3adc9d"
 
 [metadata.files]
 asgiref = [
@@ -1603,6 +1619,10 @@ django-templated-mail = [
 django-test-plus = [
     {file = "django-test-plus-2.2.0.tar.gz", hash = "sha256:e8826e9715cd52b8bf2a426cda0a6bb900a45aee5b2d7837fc6d2ca81dabee6f"},
     {file = "django_test_plus-2.2.0-py3-none-any.whl", hash = "sha256:ca7d8b27df04a9d38667c8f7c6e8df9679d765d3931ffb45b94571a24047a0e9"},
+]
+django-tree-queries = [
+    {file = "django_tree_queries-0.7.0-py3-none-any.whl", hash = "sha256:d4583ed97283002349ab615f2a34b4bb8bb467dc0cb8a72d6e0b506b0e6ce483"},
+    {file = "django_tree_queries-0.7.0.tar.gz", hash = "sha256:d2cf6f1d5718ebe606c70ab3ebda0f32ef70f29ec4351893797829c2db499878"},
 ]
 djangorestframework = [
     {file = "djangorestframework-3.12.4-py3-none-any.whl", hash = "sha256:6d1d59f623a5ad0509fe0d6bfe93cbdfe17b8116ebc8eda86d45f6e16e819aaf"},
