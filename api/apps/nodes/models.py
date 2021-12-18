@@ -10,7 +10,7 @@ def node_cover_path(instance, filename):
     return os.path.join("nodes", "cover", instance.name, filename)
 
 
-class Notes(TimeStampedModel, TreeNode):
+class Node(TimeStampedModel, TreeNode):
     name = models.CharField(_("name"), max_length=30)
     slug = models.SlugField(_("slug"), allow_unicode=True)
     cover = models.ImageField(_("cover"), upload_to=node_cover_path, blank=True)
