@@ -20,9 +20,7 @@ class Post(TimeStampedModel):
         verbose_name="user",
         related_name="posts",
     )
-    node = models.ForeignKey(
-        Node, on_delete=models.CASCADE, verbose_name="node", related_name="posts"
-    )
+    node = models.ForeignKey(Node, on_delete=models.CASCADE, verbose_name="node", related_name="posts")
 
     class Meta:
         verbose_name = _("post")
