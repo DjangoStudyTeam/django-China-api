@@ -13,8 +13,18 @@ class Post(TimeStampedModel):
     pinned = models.BooleanField(_("pinned"), default=False)
     highlighted = models.BooleanField(_("highlighted"), default=False)
     deleted = models.BooleanField(_("deleted"), default=False)
-    edited_at = MonitorField(_("edited_at"), monitor=body)
+    edited_at = MonitorField(_("edited at"), monitor=body)
     user = models.ForeignKey(
-        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, verbose_name="user", related_name="posts"
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        verbose_name="user",
+        related_name="posts",
     )
     node = models.ForeignKey(Node, on_delete=models.CASCADE, verbose_name="node", related_name="posts")
+
+    class Meta:
+        verbose_name = _("post")
+        verbose_name_plural = _("posts")
+
+    def __str__(self):
+        return self.title
