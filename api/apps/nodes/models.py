@@ -15,3 +15,10 @@ class Node(TimeStampedModel, TreeNode):
     slug = models.SlugField(_("slug"), allow_unicode=True)
     cover = models.ImageField(_("cover"), upload_to=node_cover_path, blank=True)
     description = models.TextField(_("description"), blank=True)
+
+    class Meta:
+        verbose_name = _("node")
+        verbose_name_plural = _("nodes")
+
+    def __str__(self):
+        return self.name
