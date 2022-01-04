@@ -9,6 +9,6 @@ router.register("auth", users.views.AuthViewSet, basename="auth")
 
 app_name = "api"
 urlpatterns = router.urls + [
-    path("posts/", posts.views.PostViewSet.as_view({"post": "post"}), name="posts"),
+    path("posts/", posts.views.PostViewSet.as_view({"post": "post"}), name="posts_post"),
     path("posts/<pk>/", posts.views.PostViewSet.as_view({"get": "get_retrieve", "patch": "patch"}), name="posts"),
 ]

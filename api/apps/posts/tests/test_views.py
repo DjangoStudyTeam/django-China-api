@@ -20,6 +20,6 @@ class PostsViewSetTestCase(APITestCase):
     def test_add_posts_no_exist_node(self):
         data = {"title": "test1", "body": "1", "views": 1, "user": 1, "node": 1}
         authorization = self.get_token()
-        response = self.post("api:posts", data=data, extra={"HTTP_AUTHORIZATION": authorization})
+        response = self.post("api:posts_post", data=data, extra={"HTTP_AUTHORIZATION": authorization})
         self.response_400(response)
         assert "node" in response.data
