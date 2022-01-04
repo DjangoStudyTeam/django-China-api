@@ -13,7 +13,7 @@ class Post(TimeStampedModel):
     pinned = models.BooleanField(_("pinned"), default=False)
     highlighted = models.BooleanField(_("highlighted"), default=False)
     deleted = models.BooleanField(_("deleted"), default=False)
-    edited_at = MonitorField(_("edited at"), monitor=body)
+    edited_at = MonitorField(_("edited at"), monitor="body")
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,

@@ -1,9 +1,10 @@
 from rest_framework import serializers
+from rest_framework.exceptions import ValidationError
 
 from .models import Post
 
 
-class PostSerializer(serializers.ModelSerializer):
+class PostsSerializer(serializers.ModelSerializer):
     class Meta:
         model = Post
         fields = [
@@ -11,19 +12,38 @@ class PostSerializer(serializers.ModelSerializer):
             "body",
             "views",
             "created_at",
-            "modified_at",
             "user",
             "node",
-            "deleted",
             "pinned",
             "highlighted",
             "edited_at",
         ]
         extra_kwargs = {
-            "deleted": {"write_only": True, "required": False},
             "pinned": {"required": False},
             "highlighted": {"required": False},
             "user": {"write_only": True},
             "node": {"write_only": True},
         }
-        read_only_fields = ["created_at", "modified_at", "edited_at"]
+        read_only_fields = ["created_at", "edited_at"]
+
+    def validate_views(self, value):
+        if value < 0:
+            raise ValidationError("请输入大于0的数")
+        return value
+
+
+class PostsUpdateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Post
+        fields = [
+            "title",
+            "body",
+            "views",
+            "pinned",
+            "highlighted",
+        ]
+
+    def validate_views(self, value):
+        if value < 0:
+            raise ValidationError("请输入大于0的数")
+        return value
