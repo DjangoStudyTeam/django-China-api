@@ -1,3 +1,4 @@
+from nodes.serializers import NodeListSerializer
 from rest_framework import serializers
 
 from .models import Post
@@ -15,8 +16,8 @@ class PostCreateSerializer(serializers.ModelSerializer):
             "pinned",
             "highlighted",
             "deleted",
-            "edited_at",
             "created_at",
+            "edited_at",
             "modified_at",
         ]
         read_only_fields = [
@@ -32,6 +33,20 @@ class PostCreateSerializer(serializers.ModelSerializer):
 
 
 class PostListSerializer(serializers.ModelSerializer):
+    node = NodeListSerializer(read_only=True)
+
     class Meta:
         model = Post
-        fields = "__all__"
+        fields = [
+            "title",
+            "body",
+            "views",
+            "user",
+            "pinned",
+            "highlighted",
+            "deleted",
+            "created_at",
+            "edited_at",
+            "modified_at",
+            "node",
+        ]
