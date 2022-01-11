@@ -27,7 +27,6 @@ class PostCreateSerializer(serializers.ModelSerializer):
             "pinned",
             "highlighted",
             "deleted",
-            "user",
             "views",
         ]
 
