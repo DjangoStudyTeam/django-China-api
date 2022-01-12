@@ -48,7 +48,7 @@ THIRD_PARTY_APPS = [
     "drf_spectacular",
 ]
 
-LOCAL_APPS = ["core.apps.CoreConfig", "users.apps.UsersConfig", "nodes.apps.NodesConfig"]
+LOCAL_APPS = ["core.apps.CoreConfig", "users.apps.UsersConfig", "nodes.apps.NodesConfig", "posts.apps.PostsConfig"]
 
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
 

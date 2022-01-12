@@ -9,11 +9,11 @@ from nodes.models import Node
 class Post(TimeStampedModel):
     title = models.CharField(_("title"), max_length=150)
     body = models.TextField(_("body"), blank=True)
-    views = models.IntegerField(_("views"), default=0)
+    views = models.PositiveIntegerField(_("views"), default=0)
     pinned = models.BooleanField(_("pinned"), default=False)
     highlighted = models.BooleanField(_("highlighted"), default=False)
     deleted = models.BooleanField(_("deleted"), default=False)
-    edited_at = MonitorField(_("edited at"), monitor=body)
+    edited_at = MonitorField(_("edited at"), monitor="body")
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
