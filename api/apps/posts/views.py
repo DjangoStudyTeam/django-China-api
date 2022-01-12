@@ -3,6 +3,7 @@ from rest_framework import mixins, viewsets
 from rest_framework.permissions import AllowAny, IsAuthenticated
 
 from .models import Post
+from .permissions import IsOwner
 from .serializers import PostCreateSerializer, PostListSerializer
 
 
@@ -23,6 +24,8 @@ class PostViewSet(
     def get_permissions(self):
         if self.action in {"retrieve", "list"}:
             return [AllowAny()]
+        elif self.action in {"create", "partial_update"}:
+            return [IsAuthenticated(), IsOwner()]
         return super().get_permissions()
 
     def get_serializer_class(self):
@@ -30,3 +33,6 @@ class PostViewSet(
             return PostListSerializer
         elif self.action in {"create", "partial_update"}:
             return PostCreateSerializer
+
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)

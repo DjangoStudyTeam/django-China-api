@@ -27,7 +27,8 @@ class PostViewSetTestCase(APITestCase):
     def test_list_posts(self):
         PostFactory.create_batch(5)
         response = self.get(self.posts_list_url)
-        self.response_200(response)
+        for i in response.data:
+            assert 1 == i["views"]
         assert 200 == response.status_code
 
     def test_retrieve_permission(self):
@@ -42,7 +43,7 @@ class PostViewSetTestCase(APITestCase):
         response = self.get("api:posts-detail", pk=posts.pk)
         self.response_200(response)
 
-    def test_retrieve_noneexistent_posts(self):
+    def test_retrieve_nonexistent_posts(self):
         response = self.get(self.nonexistent_posts_detail_url)
         self.response_404(response)
 
@@ -50,6 +51,7 @@ class PostViewSetTestCase(APITestCase):
         posts = PostFactory()
         response = self.get("api:posts-detail", pk=posts.pk)
         self.response_200(response)
+        assert 1 == response.data["views"]
 
     def test_create_permission(self):
         # anonymous
@@ -58,39 +60,48 @@ class PostViewSetTestCase(APITestCase):
 
     def test_create_posts(self):
         node = NodeFactory()
-        data = {"title": "test", "body": "test", "node": node.pk, "user": self.admin_user.id}
-        self.login(username=self.admin_user.username, password="password")
+        data = {"title": "test", "body": "test", "node": node.pk}
+        self.login(username=self.normal_user.username, password="password")
         response = self.post(self.posts_list_url, data=data)
         self.response_201(response)
-        assert response.data["user"] == 1
+        assert response.data["user"] == "normal"
 
     def test_create_posts_with_invalid_data(self):
         data = {"title": "", "body": "", "node": 99, "user": 99}
-        self.login(username=self.admin_user.username, password="password")
+        self.login(username=self.normal_user.username, password="password")
         response = self.post(self.posts_list_url, data=data)
         self.response_400(response)
+        assert "title" in response.data
 
     def test_patch_posts(self):
-        posts = PostFactory()
+        self.test_create_posts()
         data = {"title": "123"}
-        self.login(username=self.admin_user.username, password="password")
-        response = self.patch("api:posts-detail", pk=posts.pk, data=data)
+        self.login(username=self.normal_user.username, password="password")
+        response = self.patch("api:posts-detail", pk=1, data=data)
         self.response_200(response)
         assert response.data["title"] == "123"
 
-    def test_patch_noneexistent_posts(self):
-        self.login(username=self.admin_user.username, password="password")
+    def test_patch_nonexistent_posts(self):
+        self.login(username=self.normal_user.username, password="password")
         response = self.patch(self.nonexistent_posts_detail_url)
         self.response_404(response)
 
     def test_patch_posts_with_invalid_data(self):
-        posts = PostFactory()
-        data = {"user": 99}
-        self.login(username=self.admin_user.username, password="password")
-        response = self.patch("api:posts-detail", pk=posts.pk, data=data)
+        self.test_create_posts()
+        data = {"node": 99}
+        self.login(username=self.normal_user.username, password="password")
+        response = self.patch("api:posts-detail", pk=1, data=data)
         self.response_400(response)
+        assert "node" in response.data
 
     def test_patch_permission(self):
         # anonymous
         response = self.patch("api:posts-detail", pk=1)
         self.response_401(response)
+
+        # other_user
+        posts = PostFactory()
+        data = {"title": "123"}
+        self.login(username=self.normal_user.username, password="password")
+        response = self.patch("api:posts-detail", pk=posts.pk, data=data)
+        self.response_403(response)
