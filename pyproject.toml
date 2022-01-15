@@ -39,7 +39,6 @@ build-backend = "poetry.core.masonry.api"
 
 [[tool.poetry.source]]
 name = "tsinghua"
-default = true
 url = "https://pypi.tuna.tsinghua.edu.cn/simple"
 
 [tool.pytest.ini_options]
