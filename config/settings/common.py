@@ -46,9 +46,16 @@ THIRD_PARTY_APPS = [
     "rest_framework",
     "rest_framework.authtoken",
     "drf_spectacular",
+    "tree_comments",
 ]
 
-LOCAL_APPS = ["core.apps.CoreConfig", "users.apps.UsersConfig", "nodes.apps.NodesConfig", "posts.apps.PostsConfig"]
+LOCAL_APPS = [
+    "core.apps.CoreConfig",
+    "users.apps.UsersConfig",
+    "nodes.apps.NodesConfig",
+    "posts.apps.PostsConfig",
+    "comments.apps.CommentsConfig",
+]
 
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
 
@@ -160,6 +167,13 @@ REST_FRAMEWORK = {
     "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
 }
 
+# DRF-extensions
+# ------------------------------------------------------------------------------
+# http://chibisov.github.io/drf-extensions/docs/#settings
+REST_FRAMEWORK_EXTENSIONS = {
+    "DEFAULT_PARENT_LOOKUP_KWARG_NAME_PREFIX": "",
+}
+
 # djoser
 # ------------------------------------------------------------------------------
 # https://djoser.readthedocs.io/en/latest/settings.html
@@ -168,3 +182,9 @@ DJOSER = {
     "PASSWORD_RESET_CONFIRM_URL": "password/reset/confirm/{uid}/{token}",
     "SEND_ACTIVATION_EMAIL": True,
 }
+
+# django-tree-comments
+# ------------------------------------------------------------------------------
+# https://github.com/jukanntenn/django-tree-comments
+TREE_COMMENT_MODEL = "comments.Comment"
+TREE_COMMENTS_USER_SERIALIZER = "users.serializers.UserSerializer"
