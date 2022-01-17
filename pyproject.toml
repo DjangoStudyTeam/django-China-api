@@ -20,6 +20,7 @@ django-environ = "^0.8.1"
 mysqlclient = "^2.0.3"
 uvicorn = {extras = ["standard"], version = "^0.15.0"}
 django-tree-queries = "^0.7.0"
+django-tree-comments = "0.0.2"
 
 
 [tool.poetry.dev-dependencies]
@@ -38,7 +39,6 @@ build-backend = "poetry.core.masonry.api"
 
 [[tool.poetry.source]]
 name = "tsinghua"
-default = true
 url = "https://pypi.tuna.tsinghua.edu.cn/simple"
 
 [tool.pytest.ini_options]

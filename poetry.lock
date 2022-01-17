@@ -383,6 +383,17 @@ url = "https://pypi.tuna.tsinghua.edu.cn/simple"
 reference = "tsinghua"
 
 [[package]]
+name = "django-tree-comments"
+version = "0.0.2"
+description = "A django library for building comments in tree structure."
+category = "main"
+optional = false
+python-versions = ">=3.7,<4.0"
+
+[package.dependencies]
+django-tree-queries = ">=0.7.0,<0.8.0"
+
+[[package]]
 name = "django-tree-queries"
 version = "0.7.0"
 description = "Tree queries with explicit opt-in, without configurability"
@@ -1463,7 +1474,7 @@ reference = "tsinghua"
 [metadata]
 lock-version = "1.1"
 python-versions = ">=3.7, <4"
-content-hash = "f074d44ab00ecf6ad9dde0cb6fcf3948b57bef365a3387eae17e7fa41d3adc9d"
+content-hash = "816ee174d692d89c7774a05ba73d99a7500de43a2e1576902c028910fc3111d3"
 
 [metadata.files]
 asgiref = [
@@ -1619,6 +1630,10 @@ django-templated-mail = [
 django-test-plus = [
     {file = "django-test-plus-2.2.0.tar.gz", hash = "sha256:e8826e9715cd52b8bf2a426cda0a6bb900a45aee5b2d7837fc6d2ca81dabee6f"},
     {file = "django_test_plus-2.2.0-py3-none-any.whl", hash = "sha256:ca7d8b27df04a9d38667c8f7c6e8df9679d765d3931ffb45b94571a24047a0e9"},
+]
+django-tree-comments = [
+    {file = "django-tree-comments-0.0.2.tar.gz", hash = "sha256:a138c69d8ca2f63bf0828c400e07de4b6ec9c3839471672badccf1f984f6db72"},
+    {file = "django_tree_comments-0.0.2-py3-none-any.whl", hash = "sha256:14f646d576e8d5963417fbaf3b01a528af77eb5dbd6bf85253d82685541ef9cb"},
 ]
 django-tree-queries = [
     {file = "django_tree_queries-0.7.0-py3-none-any.whl", hash = "sha256:d4583ed97283002349ab615f2a34b4bb8bb467dc0cb8a72d6e0b506b0e6ce483"},
