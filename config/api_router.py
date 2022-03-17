@@ -1,4 +1,5 @@
 import comments.views
+import notifications.views
 import posts.views
 import users.views
 from rest_framework_extensions.routers import ExtendedDefaultRouter
@@ -14,6 +15,7 @@ posts_router.register(
     basename="posts-comment",
     parents_query_lookups=["post_id"],
 )
+router.register("notifications", notifications.views.NotificationCreateViewSet, basename="notification")
 
 app_name = "api"
 urlpatterns = router.urls + []

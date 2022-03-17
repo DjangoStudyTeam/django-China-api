@@ -1,4 +1,7 @@
-from tree_comments.viewsets import TreeCommentCreateUpdateViewSet, TreeCommentListViewSet
+from tree_comments.viewsets import (
+    TreeCommentCreateUpdateViewSet,
+    TreeCommentListViewSet,
+)
 
 from .serializers import CommentCreateSerializer
 
