@@ -47,7 +47,7 @@ THIRD_PARTY_APPS = [
     "rest_framework.authtoken",
     "drf_spectacular",
     "tree_comments",
-    'notifications_plus'
+    "notifications_plus",
 ]
 
 LOCAL_APPS = [
@@ -56,7 +56,7 @@ LOCAL_APPS = [
     "nodes.apps.NodesConfig",
     "posts.apps.PostsConfig",
     "comments.apps.CommentsConfig",
-    'notifications.apps.NotificationsConfig'
+    "notifications.apps.NotificationsConfig",
 ]
 
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
