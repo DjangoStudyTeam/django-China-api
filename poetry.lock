@@ -417,7 +417,7 @@ reference = "tsinghua"
 
 [[package]]
 name = "django-tree-comments"
-version = "0.0.2"
+version = "0.0.3"
 description = "A django library for building comments in tree structure."
 category = "main"
 optional = false
@@ -1513,7 +1513,7 @@ reference = "tsinghua"
 [metadata]
 lock-version = "1.1"
 python-versions = ">=3.7, <4"
-content-hash = "ec5a52eeef8a358ded8fb5a89aa1a12a3590d1c7f31abe5577ba4570bf7507af"
+content-hash = "6bd01ddf655c6910f87d01d2dd9db2b5da4ea3bd905fd6efec33acce3b1217da"
 
 [metadata.files]
 asgiref = [
@@ -1679,8 +1679,8 @@ django-test-plus = [
     {file = "django_test_plus-2.2.0-py3-none-any.whl", hash = "sha256:ca7d8b27df04a9d38667c8f7c6e8df9679d765d3931ffb45b94571a24047a0e9"},
 ]
 django-tree-comments = [
-    {file = "django-tree-comments-0.0.2.tar.gz", hash = "sha256:a138c69d8ca2f63bf0828c400e07de4b6ec9c3839471672badccf1f984f6db72"},
-    {file = "django_tree_comments-0.0.2-py3-none-any.whl", hash = "sha256:14f646d576e8d5963417fbaf3b01a528af77eb5dbd6bf85253d82685541ef9cb"},
+    {file = "django-tree-comments-0.0.3.tar.gz", hash = "sha256:fc6a25671eb1f200de59f251451cc333bcb9fd0d7fb6a616bddde2182e031e12"},
+    {file = "django_tree_comments-0.0.3-py3-none-any.whl", hash = "sha256:ce1fdc0d86d19daedf815db1664608670c889221a5b81f52a646b6207267f3ce"},
 ]
 django-tree-queries = [
     {file = "django_tree_queries-0.7.0-py3-none-any.whl", hash = "sha256:d4583ed97283002349ab615f2a34b4bb8bb467dc0cb8a72d6e0b506b0e6ce483"},
