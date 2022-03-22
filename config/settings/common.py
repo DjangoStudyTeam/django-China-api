@@ -146,7 +146,6 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 AUTH_USER_MODEL = "users.User"
 NOTIFICATIONS_PLUS_NOTIFICATION_MODEL = "notifications.Notification"
-TREE_COMMENTS_COMMENT_MODEL = "comments.Comment"
 
 # drf-spectacular
 # ------------------------------------------------------------------------------
@@ -192,3 +191,5 @@ DJOSER = {
 # https://github.com/jukanntenn/django-tree-comments
 TREE_COMMENT_MODEL = "comments.Comment"
 TREE_COMMENTS_USER_SERIALIZER = "users.serializers.UserSerializer"
+TREE_COMMENTS_COMMENT_MODEL = "comments.Comment"
+TREE_COMMENTS_TREE_COMMENT_MODEL = "comments.Comment"
