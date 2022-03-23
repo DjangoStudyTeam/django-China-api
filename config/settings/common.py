@@ -189,7 +189,6 @@ DJOSER = {
 # django-tree-comments
 # ------------------------------------------------------------------------------
 # https://github.com/jukanntenn/django-tree-comments
-TREE_COMMENT_MODEL = "comments.Comment"
 TREE_COMMENTS_USER_SERIALIZER = "users.serializers.UserSerializer"
 TREE_COMMENTS_COMMENT_MODEL = "comments.Comment"
 TREE_COMMENTS_TREE_COMMENT_MODEL = "comments.Comment"

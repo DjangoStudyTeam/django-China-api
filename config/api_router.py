@@ -15,7 +15,7 @@ posts_router.register(
     basename="posts-comment",
     parents_query_lookups=["post_id"],
 )
-router.register("notifications", notifications.views.NotificationCreateViewSet, basename="notification")
+router.register("notifications", notifications.views.NotificationViewSet, basename="notification")
 
 app_name = "api"
 urlpatterns = router.urls + []

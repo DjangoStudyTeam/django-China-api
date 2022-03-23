@@ -1,5 +1,5 @@
-from notifications_plus.viewsets import NotificationViewSet
+from notifications_plus.viewsets import NotificationViewSet as _NotificationViewSet
 
 
-class NotificationCreateViewSet(NotificationViewSet):
+class NotificationViewSet(_NotificationViewSet):
     ...
