@@ -1,6 +1,8 @@
 import os
 
+from core.models import TimeStampedModel
 from core.validators import FileValidator
+from django.conf import settings
 from django.contrib.auth.models import AbstractUser
 from django.core.files.base import ContentFile
 from django.db import models
@@ -33,6 +35,19 @@ class User(AbstractUser):
         format="jpeg",
         options={"quality": 100},
     )
+    special = models.BooleanField(_("special"), default=False)
+    inviter = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        verbose_name=_("inviter"),
+        blank=True,
+        null=True,
+    )
+    titles = models.ManyToManyField(
+        "titles.Title",
+        through="users.UserTitle",
+        verbose_name=_("titles"),
+    )
 
     class Meta(AbstractUser.Meta):
         pass
@@ -53,3 +68,9 @@ class User(AbstractUser):
             ContentFile(avatar_byte_array),
             save=False,
         )
+
+
+class UserTitle(models.Model):
+    user = models.ForeignKey(User, verbose_name=_("user"), on_delete=models.CASCADE)
+    title = models.ForeignKey("titles.Title", verbose_name=_("title"), on_delete=models.CASCADE)
+    primary = models.BooleanField(_("primary"), default=False)

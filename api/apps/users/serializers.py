@@ -1,6 +1,12 @@
 from django.contrib.auth import authenticate
+from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
-from djoser.serializers import SetPasswordRetypeSerializer, UserCreatePasswordRetypeSerializer
+from djoser.conf import settings
+from djoser.serializers import (
+    SetPasswordRetypeSerializer,
+    UserCreatePasswordRetypeSerializer,
+)
+from invitations.models import Invitation
 from rest_framework import serializers
 from rest_framework.authtoken.models import Token
 
@@ -17,6 +23,50 @@ class UserSerializer(serializers.ModelSerializer):
 
 class RegisterSerializer(UserCreatePasswordRetypeSerializer):
     email = serializers.EmailField()
+    invitation_code = serializers.CharField()
+
+    class Meta(UserCreatePasswordRetypeSerializer.Meta):
+        fields = UserCreatePasswordRetypeSerializer.Meta.fields + ("invitation_code",)
+
+    def perform_create(self, validated_data):
+        invitation = validated_data.pop("invitation")
+        rows = Invitation.objects.filter(code=invitation.code, valid=True).update(
+            valid=False,
+            invalidated_at=timezone.now(),
+        )
+        if rows < 1:
+            raise serializers.ValidationError({"invitation_code": _("Invitation code is invalid.")})
+
+        user = User.objects.create_user(
+            special=invitation.special,
+            inviter=invitation.creator,
+            **validated_data,
+        )
+        invitation.invitee = user
+        invitation.save(update_fields=["invitee"])
+
+        for title in invitation.titles.all():
+            user.titles.add(title)
+
+        if settings.SEND_ACTIVATION_EMAIL:
+            user.is_active = False
+            user.save(update_fields=["is_active"])
+
+        return user
+
+    def validate(self, attrs):
+        code = attrs.pop("invitation_code")
+        validated_data = super().validate(attrs)
+        try:
+            invitation = Invitation.objects.get(code=code)
+        except Invitation.DoesNotExist:
+            raise serializers.ValidationError({"invitation_code": _("Invitation code is invalid.")})
+        else:
+            if not invitation.valid or invitation.expired():
+                raise serializers.ValidationError({"invitation_code": _("Invitation code is invalid.")})
+            validated_data["invitation"] = invitation
+
+        return validated_data
 
 
 class LoginSerializer(serializers.Serializer):
