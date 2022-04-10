@@ -1,6 +1,5 @@
 import os
 
-from core.models import TimeStampedModel
 from core.validators import FileValidator
 from django.conf import settings
 from django.contrib.auth.models import AbstractUser
