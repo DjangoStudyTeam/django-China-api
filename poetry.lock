@@ -252,6 +252,22 @@ url = "https://pypi.tuna.tsinghua.edu.cn/simple"
 reference = "tsinghua"
 
 [[package]]
+name = "django-activity-stream"
+version = "1.4.0"
+description = "Generate generic activity streams from the actions on your site. Users can follow any actors' activities for personalized streams."
+category = "main"
+optional = false
+python-versions = "*"
+
+[package.extras]
+jsonfield = ["django-jsonfield-backport (>=1.0.2,<2.0)"]
+
+[package.source]
+type = "legacy"
+url = "https://pypi.tuna.tsinghua.edu.cn/simple"
+reference = "tsinghua"
+
+[[package]]
 name = "django-appconf"
 version = "1.0.5"
 description = "A helper class for handling configuration defaults of packaged apps gracefully."
@@ -1513,7 +1529,7 @@ reference = "tsinghua"
 [metadata]
 lock-version = "1.1"
 python-versions = ">=3.7, <4"
-content-hash = "6bd01ddf655c6910f87d01d2dd9db2b5da4ea3bd905fd6efec33acce3b1217da"
+content-hash = "b7e06975860d8757a3b6e679f129a55d5377e68cf5d6fde1895eda655579e465"
 
 [metadata.files]
 asgiref = [
@@ -1637,6 +1653,9 @@ defusedxml = [
 django = [
     {file = "Django-3.2.8-py3-none-any.whl", hash = "sha256:42573831292029639b798fe4d3812996bfe4ff3275f04566da90764daec011a5"},
     {file = "Django-3.2.8.tar.gz", hash = "sha256:f6d2c4069c9b9bfac03bedff927ea1f9e0d29e34525cec8a68fd28eb2a8df7af"},
+]
+django-activity-stream = [
+    {file = "django-activity-stream-1.4.0.tar.gz", hash = "sha256:4ff7c8f7bd78a111f227502c9a45db6b3abc8ecc8a732c95af2b1521569ef3c7"},
 ]
 django-appconf = [
     {file = "django-appconf-1.0.5.tar.gz", hash = "sha256:be3db0be6c81fa84742000b89a81c016d70ae66a7ccb620cdef592b1f1a6aaa4"},

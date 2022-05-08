@@ -48,6 +48,7 @@ THIRD_PARTY_APPS = [
     "drf_spectacular",
     "tree_comments",
     "notifications_plus",
+    "actstream",
 ]
 
 LOCAL_APPS = [

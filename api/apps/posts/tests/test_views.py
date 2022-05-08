@@ -1,3 +1,4 @@
+from actstream.models import Action, Follow
 from django.contrib.auth import get_user_model
 from nodes.tests.factories import NodeFactory
 from test_plus.test import APITestCase
@@ -105,3 +106,92 @@ class PostViewSetTestCase(APITestCase):
         self.login(username=self.normal_user.username, password="password")
         response = self.patch("api:posts-detail", pk=posts.pk, data=data)
         self.response_403(response)
+
+    def test_create_favourite_permission(self):
+        post = PostFactory()
+
+        # anonymous
+        response = self.post("api:posts-favourite", pk=post.pk)
+        self.response_401(response)
+
+        # authenticated
+        self.login(username=self.normal_user.username, password="password")
+        response = self.post("api:posts-favourite", pk=post.pk)
+        self.response_201(response)
+
+    def test_create_favourite(self):
+        post = PostFactory()
+        self.login(username=self.normal_user.username, password="password")
+        response = self.post("api:posts-favourite", pk=post.pk)
+        self.response_201(response)
+
+        assert Follow.objects.count() == 1
+        favourite_obj = Follow.objects.get()
+        assert favourite_obj.user == self.normal_user
+        assert favourite_obj.flag == "favourite"
+        assert favourite_obj.follow_object == post
+
+        assert Action.objects.count() == 1
+        action_obj = Action.objects.get()
+        assert action_obj.actor == self.normal_user
+        assert action_obj.verb == "favourite"
+        assert action_obj.target == post
+
+    def test_create_favourite_twice(self):
+        post = PostFactory()
+        self.login(username=self.normal_user.username, password="password")
+        response = self.post("api:posts-favourite", pk=post.pk)
+        self.response_201(response)
+
+        response = self.post("api:posts-favourite", pk=post.pk)
+        self.response_201(response)
+
+        assert Follow.objects.count() == 1
+        assert Action.objects.count() == 1
+
+    def test_create_favourite_with_nonexistent_post(self):
+        self.login(username=self.normal_user.username, password="password")
+        response = self.post("api:posts-favourite", pk=9999)
+        self.response_404(response)
+
+    def test_destroy_favourite_permission(self):
+        post = PostFactory()
+
+        # anonymous
+        response = self.delete("api:posts-favourite", pk=post.pk)
+        self.response_401(response)
+
+        # authenticated
+        self.login(username=self.normal_user.username, password="password")
+        response = self.delete("api:posts-favourite", pk=post.pk)
+        self.response_204(response)
+
+    def test_destroy_favourite(self):
+        post = PostFactory()
+        self.login(username=self.normal_user.username, password="password")
+        response = self.post("api:posts-favourite", pk=post.pk)
+        self.response_201(response)
+        assert Follow.objects.count() == 1
+
+        response = self.delete("api:posts-favourite", pk=post.pk)
+        self.response_204(response)
+        assert Follow.objects.count() == 0
+
+    def test_destroy_favourite_twice(self):
+        post = PostFactory()
+        self.login(username=self.normal_user.username, password="password")
+        self.post("api:posts-favourite", pk=post.pk)
+        assert Follow.objects.count() == 1
+
+        response = self.delete("api:posts-favourite", pk=post.pk)
+        self.response_204(response)
+        assert Follow.objects.count() == 0
+
+        response = self.delete("api:posts-favourite", pk=post.pk)
+        self.response_204(response)
+        assert Follow.objects.count() == 0
+
+    def test_destroy_favourite_with_nonexistent_post(self):
+        self.login(username=self.normal_user.username, password="password")
+        response = self.delete("api:posts-favourite", pk=9999)
+        self.response_404(response)

@@ -22,6 +22,7 @@ uvicorn = {extras = ["standard"], version = "^0.15.0"}
 django-tree-queries = "^0.7.0"
 django-notifications-plus = "^0.0.0"
 django-tree-comments = "^0.0.3"
+django-activity-stream = "^1.4.0"
 
 
 [tool.poetry.dev-dependencies]
