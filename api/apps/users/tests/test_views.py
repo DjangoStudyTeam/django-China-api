@@ -1,7 +1,13 @@
+from datetime import timedelta
+
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
 from django.test.utils import mail
+from django.utils import timezone
 from djoser import utils
+from invitations.tests.factories import InvitationFactory
 from test_plus.test import APITestCase
+from titles.tests.factories import TitleFactory
+from users.models import User
 
 
 class AuthViewSetTestCase(APITestCase):
@@ -11,26 +17,102 @@ class AuthViewSetTestCase(APITestCase):
         self.user1.is_active = False
         self.user1.save()
 
+        self.invitation = InvitationFactory()
+
     def test_register(self):
         data = {
             "username": "another",
             "email": "another@example.com",
+            "invitation_code": self.invitation.code,
             "password": "uncommon*pwd",
             "re_password": "uncommon*pwd",
         }
         response = self.post("api:auth-register", data=data)
         self.response_201(response)
         assert len(mail.outbox) == 1
+        user = User.objects.get(username="another")
+        assert not user.special
+        assert user.titles.count() == 0
+        self.invitation.refresh_from_db()
+        assert self.invitation.invitee == user
+
+    def test_register_with_special_and_titles_invitation(self):
+        inv = InvitationFactory(special=True)
+
+        title1 = TitleFactory()
+        title2 = TitleFactory()
+        inv.titles.add(title1, title2)
+
+        data = {
+            "username": "another",
+            "email": "another@example.com",
+            "invitation_code": inv.code,
+            "password": "uncommon*pwd",
+            "re_password": "uncommon*pwd",
+        }
+        response = self.post("api:auth-register", data=data)
+        self.response_201(response)
+        assert len(mail.outbox) == 1
+        user = User.objects.get(username="another")
+        assert user.special
+        assert user.titles.count() == 2
+        assert [title.word for title in user.titles.all()] == [title1.word, title2.word]
+        inv.refresh_from_db()
+        assert inv.invitee == user
+
+    def test_register_with_invalid_invitation_code(self):
+        data = {
+            "username": "another",
+            "email": "another@example.com",
+            "invitation_code": "12344321",
+            "password": "uncommon*pwd",
+            "re_password": "uncommon*pwd",
+        }
+        response = self.post("api:auth-register", data=data)
+        self.response_400(response)
+        assert "invitation_code" in response.data
+
+        invalid_inv = InvitationFactory(valid=False)
+        data = {
+            "username": "another",
+            "email": "another@example.com",
+            "invitation_code": invalid_inv.code,
+            "password": "uncommon*pwd",
+            "re_password": "uncommon*pwd",
+        }
+        response = self.post("api:auth-register", data=data)
+        self.response_400(response)
+        assert "invitation_code" in response.data
+
+        expired_inv = InvitationFactory(expire_at=timezone.now() - timedelta(seconds=1))
+        data = {
+            "username": "another",
+            "email": "another@example.com",
+            "invitation_code": expired_inv.code,
+            "password": "uncommon*pwd",
+            "re_password": "uncommon*pwd",
+        }
+        response = self.post("api:auth-register", data=data)
+        self.response_400(response)
+        assert "invitation_code" in response.data
 
     def test_register_with_invalid_data(self):
-        data = {"username": "another", "password": "uncommon*pwd"}
+        data = {
+            "username": "another",
+            "password": "uncommon*pwd",
+            "invitation_code": "12344321",
+        }
         response = self.post("api:auth-register", data=data)
         self.response_400(response)
         assert "re_password" in response.data
         assert "email" in response.data
 
     def test_register_with_existed_user(self):
-        data = {"username": "user", "password": "uncommon*pwd"}
+        data = {
+            "username": "user",
+            "password": "uncommon*pwd",
+            "invitation_code": self.invitation.code,
+        }
         response = self.post("api:auth-register", data=data)
         self.response_400(response)
         assert "username" in response.data

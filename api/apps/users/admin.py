@@ -2,11 +2,17 @@ from django.contrib import admin
 from django.contrib.auth import admin as auth_admin
 from django.utils.translation import gettext_lazy as _
 
-from .models import User
+from .models import User, UserTitle
+
+
+class UserTitleInline(admin.TabularInline):
+    model = UserTitle
+    extra = 1
 
 
 @admin.register(User)
 class UserAdmin(auth_admin.UserAdmin):
+    inlines = (UserTitleInline,)
     fieldsets = (
         ("User", {"fields": ("nickname", "avatar")}),
         (None, {"fields": ("username", "password")}),

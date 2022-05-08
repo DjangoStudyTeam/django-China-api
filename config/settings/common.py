@@ -55,6 +55,8 @@ LOCAL_APPS = [
     "nodes.apps.NodesConfig",
     "posts.apps.PostsConfig",
     "comments.apps.CommentsConfig",
+    "titles.apps.TitlesConfig",
+    "invitations.apps.InvitationsConfig",
 ]
 
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
