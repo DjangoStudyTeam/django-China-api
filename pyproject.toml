@@ -20,7 +20,8 @@ django-environ = "^0.8.1"
 mysqlclient = "^2.0.3"
 uvicorn = {extras = ["standard"], version = "^0.15.0"}
 django-tree-queries = "^0.7.0"
-django-tree-comments = "0.0.2"
+django-notifications-plus = "^0.0.0"
+django-tree-comments = "^0.0.3"
 
 
 [tool.poetry.dev-dependencies]

@@ -47,6 +47,7 @@ THIRD_PARTY_APPS = [
     "rest_framework.authtoken",
     "drf_spectacular",
     "tree_comments",
+    "notifications_plus",
 ]
 
 LOCAL_APPS = [
@@ -55,6 +56,7 @@ LOCAL_APPS = [
     "nodes.apps.NodesConfig",
     "posts.apps.PostsConfig",
     "comments.apps.CommentsConfig",
+    "notifications.apps.NotificationsConfig",
     "titles.apps.TitlesConfig",
     "invitations.apps.InvitationsConfig",
 ]
@@ -145,6 +147,7 @@ MEDIA_URL = "/media/"
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 AUTH_USER_MODEL = "users.User"
+NOTIFICATIONS_PLUS_NOTIFICATION_MODEL = "notifications.Notification"
 
 # drf-spectacular
 # ------------------------------------------------------------------------------
@@ -188,5 +191,6 @@ DJOSER = {
 # django-tree-comments
 # ------------------------------------------------------------------------------
 # https://github.com/jukanntenn/django-tree-comments
-TREE_COMMENT_MODEL = "comments.Comment"
 TREE_COMMENTS_USER_SERIALIZER = "users.serializers.UserSerializer"
+TREE_COMMENTS_COMMENT_MODEL = "comments.Comment"
+TREE_COMMENTS_TREE_COMMENT_MODEL = "comments.Comment"
