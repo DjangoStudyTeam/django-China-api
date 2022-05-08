@@ -57,6 +57,8 @@ LOCAL_APPS = [
     "posts.apps.PostsConfig",
     "comments.apps.CommentsConfig",
     "notifications.apps.NotificationsConfig",
+    "titles.apps.TitlesConfig",
+    "invitations.apps.InvitationsConfig",
 ]
 
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
