@@ -1,6 +1,7 @@
 from actstream.models import Action, Follow
 from django.contrib.auth import get_user_model
 from nodes.tests.factories import NodeFactory
+from posts.models import Post
 from test_plus.test import APITestCase
 
 from .factories import PostFactory
@@ -66,6 +67,13 @@ class PostViewSetTestCase(APITestCase):
         response = self.post(self.posts_list_url, data=data)
         self.response_201(response)
         assert response.data["user"] == "normal"
+        post_id = response.data["id"]
+
+        assert Action.objects.count() == 1
+        action_obj = Action.objects.get(verb="post")
+        post = Post.objects.get(id=post_id)
+        assert action_obj.actor == self.normal_user
+        assert action_obj.target == post
 
     def test_create_posts_with_invalid_data(self):
         data = {"title": "", "body": "", "node": 99, "user": 99}

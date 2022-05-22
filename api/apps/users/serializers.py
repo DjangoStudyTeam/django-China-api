@@ -2,7 +2,10 @@ from django.contrib.auth import authenticate
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 from djoser.conf import settings
-from djoser.serializers import SetPasswordRetypeSerializer, UserCreatePasswordRetypeSerializer
+from djoser.serializers import (
+    SetPasswordRetypeSerializer,
+    UserCreatePasswordRetypeSerializer,
+)
 from invitations.models import Invitation
 from rest_framework import serializers
 from rest_framework.authtoken.models import Token

@@ -11,6 +11,7 @@ class PostCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Post
         fields = [
+            "id",
             "title",
             "body",
             "node",
@@ -24,6 +25,7 @@ class PostCreateSerializer(serializers.ModelSerializer):
             "user",
         ]
         read_only_fields = [
+            "id",
             "created_at",
             "edited_at",
             "modified_at",
@@ -41,6 +43,7 @@ class PostListSerializer(serializers.ModelSerializer):
     class Meta:
         model = Post
         fields = [
+            "id",
             "title",
             "body",
             "views",

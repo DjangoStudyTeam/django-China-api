@@ -1,5 +1,5 @@
 from actstream.actions import follow, unfollow
-from django.shortcuts import render  # noqa F405
+from actstream.signals import action as action_signal
 from rest_framework import mixins, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.permissions import AllowAny, IsAuthenticated
@@ -38,7 +38,9 @@ class PostViewSet(
             return PostCreateSerializer
 
     def perform_create(self, serializer):
-        serializer.save(user=self.request.user)
+        user = self.request.user
+        instance = serializer.save(user=user)
+        action_signal.send(user, verb="post", target=instance)
 
     @action(methods=["POST"], detail=True, url_path="favourites", url_name="favourite")
     def create_favourite(self, request, *args, **kwargs):
