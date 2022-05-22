@@ -1,3 +1,4 @@
+from actstream.models import Action, Follow
 from comments.models import Comment
 from posts.tests.factories import PostFactory
 from rest_framework.request import Request
@@ -63,6 +64,49 @@ class CommentListNestedViewSetTestCase(APITestCase):
             context={"request": Request(request)},
         )
         self.assertEqual(response.data["results"], serializer.data)
+
+    def test_create_like_permission(self):
+        # anonymous
+        response = self.post("api:comment-like", pk=self.comment_1a.pk)
+        self.response_401(response)
+
+        # authenticated
+        self.login(username=self.user.username, password="password")
+        response = self.post("api:comment-like", pk=self.comment_1a.pk)
+        self.response_201(response)
+
+    def test_create_like(self):
+        self.login(username=self.user.username, password="password")
+        response = self.post("api:comment-like", pk=self.comment_1a.pk)
+        self.response_201(response)
+
+        assert Follow.objects.count() == 1
+        like_obj = Follow.objects.get()
+        assert like_obj.user == self.user
+        assert like_obj.flag == "like"
+        assert like_obj.follow_object == self.comment_1a
+
+        assert Action.objects.count() == 1
+        action_obj = Action.objects.get()
+        assert action_obj.actor == self.user
+        assert action_obj.verb == "like"
+        assert action_obj.target == self.comment_1a
+
+    def test_create_like_twice(self):
+        self.login(username=self.user.username, password="password")
+        response = self.post("api:comment-like", pk=self.comment_1a.pk)
+        self.response_201(response)
+
+        response = self.post("api:comment-like", pk=self.comment_1a.pk)
+        self.response_201(response)
+
+        assert Follow.objects.count() == 1
+        assert Action.objects.count() == 1
+
+    def test_create_like_with_nonexistent_comment(self):
+        self.login(username=self.user.username, password="password")
+        response = self.post("api:comment-like", pk=9999)
+        self.response_404(response)
 
 
 class CommentCreateUpdateViewSetTestCase(APITestCase):
