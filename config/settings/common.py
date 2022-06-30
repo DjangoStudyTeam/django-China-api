@@ -49,6 +49,7 @@ THIRD_PARTY_APPS = [
     "tree_comments",
     "notifications_plus",
     "actstream",
+    "anymail",
 ]
 
 LOCAL_APPS = [
@@ -147,6 +148,12 @@ MEDIA_URL = "/media/"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
+# EMAIL
+# -----------------------------------------------------------------
+SERVER_EMAIL = env.str("DJANGO_SERVER_EMAIL", default="noreply@django-china.x")
+EMAIL_TIMEOUT = 5
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+
 AUTH_USER_MODEL = "users.User"
 NOTIFICATIONS_PLUS_NOTIFICATION_MODEL = "notifications.Notification"
 
@@ -185,8 +192,9 @@ REST_FRAMEWORK_EXTENSIONS = {
 # https://djoser.readthedocs.io/en/latest/settings.html
 DJOSER = {
     "ACTIVATION_URL": "activate/{uid}/{token}",
-    "PASSWORD_RESET_CONFIRM_URL": "password/reset/confirm/{uid}/{token}",
+    "PASSWORD_RESET_CONFIRM_URL": "reset-password/{uid}/{token}",
     "SEND_ACTIVATION_EMAIL": True,
+    "PASSWORD_RESET_SHOW_EMAIL_NOT_FOUND": False,
 }
 
 # django-tree-comments

@@ -4,7 +4,7 @@ from django.contrib.auth.tokens import default_token_generator
 from djoser.email import ActivationEmail, ConfirmationEmail, PasswordResetEmail
 from djoser.serializers import (
     ActivationSerializer,
-    PasswordResetConfirmSerializer,
+    PasswordResetConfirmRetypeSerializer,
     SendEmailResetSerializer,
 )
 from drf_spectacular.utils import extend_schema
@@ -44,7 +44,7 @@ class AuthViewSet(viewsets.GenericViewSet):
         elif self.action == "forgot_password":
             return SendEmailResetSerializer
         elif self.action == "reset_password":
-            return PasswordResetConfirmSerializer
+            return PasswordResetConfirmRetypeSerializer
         elif self.action == "activate":
             return ActivationSerializer
         elif self.action == "resend_activation":
@@ -140,11 +140,8 @@ class AuthViewSet(viewsets.GenericViewSet):
             context = {"user": user}
             to = [user.email]
             PasswordResetEmail(self.request, context).send(to)
-            return Response(status=status.HTTP_200_OK)
-        else:
-            return Response(
-                status=status.HTTP_400_BAD_REQUEST, data={"email_not_found": "User with given email does not exist."}
-            )
+
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
     @extend_schema(summary="reset_password", responses=None)
     @action(
@@ -158,7 +155,7 @@ class AuthViewSet(viewsets.GenericViewSet):
         serializer.is_valid(raise_exception=True)
         user = serializer.user
         user.set_password(serializer.data["new_password"])
-        return Response(status=status.HTTP_200_OK)
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
     @extend_schema(summary="Activate", responses=None)
     @action(["POST"], detail=False, url_name="activate", url_path="activate")

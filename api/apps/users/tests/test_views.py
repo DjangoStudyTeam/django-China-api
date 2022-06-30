@@ -177,43 +177,42 @@ class AuthViewSetTestCase(APITestCase):
     def test_forgot_password(self):
         data = {"email": "user@example.com"}
         response = self.post("api:auth-forgot_password", data=data)
-        self.response_200(response)
-        assert 200 == response.status_code
+        self.response_204(response)
+        self.assertEqual(len(mail.outbox), 1)
 
     def test_forgot_password_with_invalid_data(self):
         data = {"email": "test@example.com"}
         response = self.post("api:auth-forgot_password", data=data)
-        self.response_400(response)
-        assert "email_not_found" in response.data
+        self.response_204(response)
+        self.assertEqual(len(mail.outbox), 0)
 
     def test_reset_password(self):
         uid = utils.encode_uid(self.user.id)
         token = PasswordResetTokenGenerator().make_token(self.user)
-        data = {"uid": uid, "token": token, "new_password": "uncommon*pwd"}
+        data = {"uid": uid, "token": token, "new_password": "uncommon*pwd", "re_new_password": "uncommon*pwd"}
         response = self.post("api:auth-reset_password", data=data)
-        self.response_200(response)
-        assert 200 == response.status_code
+        self.response_204(response)
 
     def test_reset_password_with_invalid_uid(self):
-        data = {"uid": "1", "token": "abc123", "new_password": "uncommon*pwd"}
+        data = {"uid": "1", "token": "abc123", "new_password": "uncommon*pwd", "re_new_password": "uncommon*pwd"}
         response = self.post("api:auth-reset_password", data=data)
         self.response_400(response)
-        assert "uid" in response.data
+        self.assertIn("uid", response.data)
 
     def test_reset_password_with_invalid_token(self):
         uid = utils.encode_uid(self.user.id)
-        data = {"uid": uid, "token": "abc123", "new_password": "uncommon*pwd"}
+        data = {"uid": uid, "token": "abc123", "new_password": "uncommon*pwd", "re_new_password": "uncommon*pwd"}
         response = self.post("api:auth-reset_password", data=data)
         self.response_400(response)
-        assert "token" in response.data
+        self.assertIn("token", response.data)
 
     def test_reset_password_with_common_password(self):
         uid = utils.encode_uid(self.user.id)
         token = PasswordResetTokenGenerator().make_token(self.user)
-        data = {"uid": uid, "token": token, "new_password": "admin123"}
+        data = {"uid": uid, "token": token, "new_password": "admin123", "re_new_password": "admin123"}
         response = self.post("api:auth-reset_password", data=data)
         self.response_400(response)
-        assert "new_password" in response.data
+        self.assertIn("new_password", response.data)
 
     def test_activate(self):
         self.user.is_active = False

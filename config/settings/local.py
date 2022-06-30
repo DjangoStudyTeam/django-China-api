@@ -1,7 +1,3 @@
-# !/usr/bin/python3
-# -*- coding: utf-8 -*-
-
-
 from .common import *  # noqa F405
 
 # SECURITY WARNING: keep the secret key used in production secret!
@@ -23,7 +19,11 @@ DATABASES = {
     }
 }
 
-EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+# EMAIL
+# ------------------------------------------------------------------------------
+EMAIL_HOST = env("DJANGO_EMAIL_HOST", default="localhost")  # noqa F405
+EMAIL_PORT = env.int("DJANGO_EMAIL_PORT", default=1025)  # noqa F405
+
 
 # django-debug-toolbar
 # ------------------------------------------------------------------------------

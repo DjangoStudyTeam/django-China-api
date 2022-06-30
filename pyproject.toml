@@ -23,6 +23,7 @@ django-tree-queries = "^0.7.0"
 django-notifications-plus = "^0.0.0"
 django-tree-comments = "^0.0.3"
 django-activity-stream = "^1.4.0"
+django-anymail = "^8.6"
 
 
 [tool.poetry.dev-dependencies]
